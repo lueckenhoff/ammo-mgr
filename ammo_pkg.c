@@ -118,6 +118,8 @@ void ammo_parse (char *line)
 
 //    printf("22 9mm Speer Lawman 124 TMJ 50 /ct\n");
 //    printf("2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct\n");
+
+    /* first, work from end of line to the end of the (highly variable) product name */
     right = line + (strlen(line) - 1);
     cur = right;
     while (' ' != *cur)
@@ -175,5 +177,35 @@ void ammo_parse (char *line)
     printf("\n");
 
     prodname_end = left - 2;
+
+    /* next, work from beginning of line to the beginning of the (highly variable) product name */
+    left = line;
+    cur = left;
+    while (' ' != *cur)
+    {
+        ++cur;
+    }
+    right = cur - 1;
+    printf("should be quantity (number of packages), as a string:\n");
+    for (cur = left; cur <= right; cur++)
+    {
+        printf("%c", *cur);
+    }
+    printf("\n");
+
+    left = right + 2;
+    cur = left;
+    while (' ' != *cur)
+    {
+        ++cur;
+    }
+    right = cur - 1;
+    printf("should be 1st word of caliber (only word for '9mm'):\n");
+    for (cur = left; cur <= right; cur++)
+    {
+        printf("%c", *cur);
+    }
+    printf("\n");
+
 }
 
