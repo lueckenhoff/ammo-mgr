@@ -278,6 +278,7 @@ int ammo_parse (char *line)
         product_name[ix] = *cur;
         printf("%c", *cur);
     }
+    product_name[ix] = '\0';
     printf("\n");
 
     pkg = ammo_pkg_add(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
