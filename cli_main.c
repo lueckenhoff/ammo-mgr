@@ -30,6 +30,14 @@ void add_ammo (void)
 }
 
 
+void dump_everything (void)
+{
+    stringdb_dump();
+    ammo_pkg_dump();
+}
+
+
+
 void cmd_loop (void)
 {
     int keep_going = 1;
@@ -52,6 +60,10 @@ void cmd_loop (void)
         case 'A':
             add_ammo();
             break;
+        case 'D':
+            dump_everything();
+            break;
+        case '?':               /* fall-thru on purpose */
         case 'H':
             print_help();
             break;

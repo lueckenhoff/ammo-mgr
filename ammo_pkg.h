@@ -31,17 +31,19 @@ typedef struct
     unsigned    bullet_grains;
     STRING_ID   bullet_descrip_id;
     unsigned    quantity_per_box;
+    int         quantity_held;
 } AMMO_PKG_T;
 /* this data structure represents one particular packaging of one particular kind of ammo */
 
 
 void ammo_pkg_init(void);
 
-AMMO_PKG_ID ammo_pkg_add(char *caliber, char *vendor, char *product_name, unsigned bullet_grains, char *bullet_id, unsigned quantity_per_box);
+AMMO_PKG_T * ammo_pkg_add(char *caliber, char *vendor, char *product_name, unsigned bullet_grains, char *bullet_id, unsigned quantity_per_box);
 
-// AMMO_PKG_T * ammo_pkg_lookup(AMMO_PKG_ID id);
+AMMO_PKG_T *
+ammo_pkg_lookup(char *caliber, char *vendor, char *product_name, unsigned bullet_grains, char *bullet_descrip, unsigned quantity_per_box);
 
 void ammo_pkg_dump(void);
 
-void ammo_parse(char *line);
+int ammo_parse(char *line);
 #endif  /* not __INC_AMMO_PKG_H */

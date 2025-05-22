@@ -16,11 +16,11 @@ add_string (const char *str)
     size_t len;
     STRING_ID id;
 
-//printf("add_string(%s): entry\n", str);
+printf("add_string(%s): entry\n", str);
     id = string_get_id(str);
     if (ERROR != id)
     {
-//printf("add_string(: returning existing id %d\n", id);
+printf("add_string: returning existing id %d\n", id);
         return id;
     }
     if (stringdb_index >= MAX_STRINGS)
@@ -38,7 +38,7 @@ add_string (const char *str)
     stringdb_arr[stringdb_index] = newstr;
     id = stringdb_index;
     ++stringdb_index;
-//printf("add_string(: returning new id %d\n", id);
+printf("add_string: returning new id %d\n", id);
     return id;
 }
 
