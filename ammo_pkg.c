@@ -3,13 +3,15 @@
 #include "utarray.h"
 
 UT_array *ammo_pkg_arr;
+UT_icd ammopkg_icd = {sizeof(AMMO_PKG_T), NULL, NULL, NULL};
+
 int ammo_pkg_index = 0;
 
 
 
 void ammo_pkg_init(void)
 {
-    utarray_new(ammo_pkg_arr, &ut_ptr_icd);
+    utarray_new(ammo_pkg_arr, &ammopkg_icd);
 }
 
 
@@ -90,6 +92,16 @@ printf("ammo_pkg_add: returning existing struct ptr\n");
     pkg->quantity_per_box  = quantity_per_box;
     pkg->id                = ammo_pkg_index++;
     pkg->quantity_held     = 0;
+
+    printf("at time of adding:\n");
+    printf("         pkg->caliber_id=%u\n", pkg->caliber_id);
+    printf("          pkg->vendor_id=%u\n", pkg->vendor_id);
+    printf("    pkg->product_name_id=%u\n", pkg->product_name_id);
+    printf("  pkg->bullet_descrip_id=%u\n", pkg->bullet_descrip_id);
+    printf("      pkg->bullet_grains=%u\n", pkg->bullet_grains);
+    printf("   pkg->quantity_per_box=%u\n", pkg->quantity_per_box);
+    printf("      pkg->quantity_held=%u\n", pkg->quantity_held);
+    printf("                 pkg->id=%u\n", pkg->id);
     /* finally, add this to the dynamic array, and return the new structure ptr */
     utarray_push_back(ammo_pkg_arr, pkg);
 printf("ammo_pkg_add: returning new struct ptr\n");
@@ -101,6 +113,7 @@ printf("ammo_pkg_add: returning new struct ptr\n");
 void ammo_pkg_dump (void)
 {
     AMMO_PKG_T *pkg;
+
     pkg = NULL;
     while ( (pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg)) )
     {
@@ -143,12 +156,13 @@ int ammo_parse (char *line)
         --cur;
     }
     left = cur + 1;
-    printf("should be '/ct' or 'ct'\n");
+    //printf("should be '/ct' or 'ct'\n");
     for (cur = left; cur <= right; cur++)
     {
-        printf("%c", *cur);
+        ;
+        //printf("%c", *cur);
     }
-    printf("\n");
+    //printf("\n");
 
     right = left - 2;
     cur = right;
@@ -157,15 +171,16 @@ int ammo_parse (char *line)
         --cur;
     }
     left = cur + 1;
-    printf("should be quantity in the box, as a string:\n");
+    //printf("should be quantity in the box, as a string:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         tmpstr[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     tmpstr[ix] = '\0';
-    quantity_per_box = atoi(tmpstr);
-    printf("\n");
+    quantity_per_box = (unsigned) atoi(tmpstr);
+    //printf("\n");
+    printf("quantity_per_box=%u\n", quantity_per_box);
 
     right = left - 2;
     cur = right;
@@ -174,14 +189,15 @@ int ammo_parse (char *line)
         --cur;
     }
     left = cur + 1;
-    printf("should be bullet_description, as a string:\n");
+    //printf("should be bullet_description, as a string:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         bullet_descrip[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     bullet_descrip[ix] = '\0';
-    printf("\n");
+    //printf("\n");
+    printf("bullet_descrip='%s'\n", bullet_descrip);
 
     right = left - 2;
     cur = right;
@@ -190,15 +206,16 @@ int ammo_parse (char *line)
         --cur;
     }
     left = cur + 1;
-    printf("should be bullet weight, as a string:\n");
+    //printf("should be bullet weight, as a string:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         tmpstr[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     tmpstr[ix] = '\0';
     bullet_grains = (unsigned) atoi(tmpstr);
-    printf("\n");
+    //printf("\n");
+    printf("bullet_grains=%u\n", bullet_grains);
 
     prodname_end = left - 2;
 
@@ -210,15 +227,16 @@ int ammo_parse (char *line)
         ++cur;
     }
     right = cur - 1;
-    printf("should be quantity (number of packages), as a string:\n");
+    //printf("should be quantity (number of packages), as a string:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         tmpstr[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     tmpstr[ix] = '\0';
-    quantity = (unsigned) atoi(tmpstr);
-    printf("\n");
+    quantity = atoi(tmpstr);
+    printf("quantity=%d\n", quantity);
+    //printf("\n");
 
     left = right + 2;
     cur = left;
@@ -227,13 +245,13 @@ int ammo_parse (char *line)
         ++cur;
     }
     right = cur - 1;
-    printf("should be 1st word of caliber (only word for '9mm'):\n");
+    //printf("should be 1st word of caliber (only word for '9mm'):\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         caliber[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
-    printf("\n");
+    //printf("\n");
 
     if (('9' != left[0]) || ('m' != left[1]) || ('m' != left[2]))
     {
@@ -244,16 +262,17 @@ int ammo_parse (char *line)
             ++cur;
         }
         right = cur - 1;
-        printf("should be 2nd word of caliber (but never for '9mm'):\n");
+        //printf("should be 2nd word of caliber (but never for '9mm'):\n");
         caliber[ix++] = ' ';
         for (cur = left; cur <= right; cur++, ix++)
         {
             caliber[ix] = *cur;
-            printf("%c", *cur);
+            //printf("%c", *cur);
         }
-        printf("\n");
+        //printf("\n");
     }
     caliber[ix] = '\0';
+    printf("caliber='%s'\n", caliber);
 
     left = right + 2;
     cur = left;
@@ -262,24 +281,26 @@ int ammo_parse (char *line)
         ++cur;
     }
     right = cur - 1;
-    printf("should be vendor:\n");
+    //printf("should be vendor:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         vendor[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     vendor[ix] = '\0';
-    printf("\n");
+    //printf("\n");
+    printf("vendor='%s'\n", vendor);
 
     prodname_start = right + 2;
-    printf("product name (variable number of words):\n");
+    //printf("product name (variable number of words):\n");
     for (cur = prodname_start, ix = 0; cur <= prodname_end; cur++, ix++)
     {
         product_name[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     product_name[ix] = '\0';
-    printf("\n");
+    //printf("\n");
+    printf("product_name='%s'\n", product_name);
 
     pkg = ammo_pkg_add(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     if (!pkg)
