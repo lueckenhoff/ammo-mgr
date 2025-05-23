@@ -1,3 +1,6 @@
+# Ammo inventory files
+*.amo
+
 # Prerequisites
 *.d
 
