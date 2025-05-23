@@ -10,7 +10,9 @@ void print_help (void)
 {
     printf("commands:\n"
            " a - add ammo\n"
-           " h - print this help\n"
+           " d - dump state\n"
+           " h - show this help\n"
+           " ? - show this help\n"
            " q - quit the application\n"
           );
 }
