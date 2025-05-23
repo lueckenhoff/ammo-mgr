@@ -50,10 +50,13 @@ int add_ammo (FILE *input_fp, FILE *output_fp)
     char str[5];
     char *ptr;
 
-    printf("for example:\n");
-    printf("22 9mm Speer Lawman 124 TMJ 50 /ct\n");
-    printf("2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct\n");
-    printf("enter timestamp in YYYY/MM/DD format:\n");
+    if (stdin == input_fp)
+    {
+        printf("for example:\n");
+        printf("22 9mm Speer Lawman 124 TMJ 50 /ct\n");
+        printf("2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct\n");
+        printf("enter timestamp in YYYY/MM/DD format:\n");
+    }
     ptr = fgets(line, sizeof(line), input_fp);
     if (!ptr)
     {
