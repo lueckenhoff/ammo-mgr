@@ -9,11 +9,14 @@
 void print_help (void)
 {
     printf("commands:\n"
-           " a - add ammo\n"
-           " d - dump state\n"
-           " h - show this help\n"
+           " add - interactively add ammo\n"
+           " dump - dump state\n"
+           " help - show this help\n"
+           " read - read in a ammo transaction file from disk\n"
            " ? - show this help\n"
-           " q - quit the application\n"
+           " quit - quit the application\n"
+           "\n"
+           "(commands may be abbreviated)\n"
           );
 }
 
@@ -111,6 +114,31 @@ int add_ammo (FILE *input_fp, FILE *output_fp)
     return 1;
 }
 
+int ingest_file (FILE *input_fp, FILE *output_fp)
+{
+    int more_coming = 1;
+
+    /* read state from the config file until there is no more */
+    while (more_coming)
+    {
+        more_coming = add_ammo(input_fp, output_fp);
+    }
+    return 0;
+}
+
+int ingest_path (char *path, FILE *output_fp)
+{
+    FILE *input_fp;
+    int rval = -1;
+
+    input_fp = fopen(path, "r");
+    if (input_fp)
+    {
+        rval = ingest_file(input_fp, output_fp);
+        fclose(input_fp);
+    }
+    return rval;
+}
 
 void dump_everything (void)
 {
@@ -123,38 +151,64 @@ void dump_everything (void)
 void cmd_loop (FILE *cfg_file)
 {
     int keep_going = 1;
-    char c;
+    int ix;
     char buffer[80];
+    char *word2;
+    char word1[10];
 
     while (keep_going)
     {
         printf("enter a command: (h for help): ");
+        bzero(buffer, sizeof(buffer));          /* ensure a fresh start */
         if (!fgets(buffer, sizeof(buffer), stdin))
         {
             break;
         }
         buffer[strcspn(buffer, "\n")] = 0;      /* trim off trailing newline */
-        c = buffer[0];
-        c = toupper(c);
-        printf("gotta %c (0x%X)\n", c, c);
-        switch (c)
+        for (ix = 0; ix < sizeof(word1) - 1; ix++)
         {
-        case 'A':
+            if (isspace(buffer[ix]))
+            {
+                break;
+            }
+            word1[ix] = buffer[ix];
+        }
+        word1[ix] = '\0';
+        printf("read word1 '%s'\n", word1);
+        for ( ; ix < sizeof(buffer) - 1; ix++)
+        {
+            if (!isspace(buffer[ix]))
+            {
+                break;
+            }
+        }
+        word2 = buffer + ix;
+        printf("read word2 '%s'\n", word2);
+
+        if (0 == strncasecmp(word1, "add", 1))
+        {
             add_ammo(stdin, cfg_file);
-            break;
-        case 'D':
+        }
+        else if (0 == strncasecmp(word1, "dump", 1))
+        {
             dump_everything();
-            break;
-        case '?':               /* fall-thru on purpose */
-        case 'H':
+        }
+        else if (   (0 == strncasecmp(word1, "help", 1))
+                 || (0 == strcmp(word1, "?")))
+        {
             print_help();
-            break;
-        case 'Q':
+        }
+        else if (0 == strncasecmp(word1, "quit", 1))
+        {
             keep_going = 0;
-            break;
-        default:
-            printf("unknown command %c; ignoring\n", c);
-            break;
+        }
+        else if (0 == strncasecmp(word1, "read", 1))
+        {
+            ingest_path(word2, cfg_file);
+        }
+        else
+        {
+            printf("unknown command %s; ignoring\n", word1);
         }
     }
 }
@@ -164,7 +218,6 @@ void cmd_loop (FILE *cfg_file)
 int main (int argc, char **argv)
 {
     int account_id;
-    int more_coming = 1;
     FILE *cfg_file;
     char file_str[80];
 
@@ -180,19 +233,13 @@ int main (int argc, char **argv)
     printf("account ID=%d\n", account_id);
     snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);
     printf("config file='%s'\n", file_str);
-    cfg_file = fopen(file_str, "rw");
+    (void) ingest_path(file_str, NULL);
+    cfg_file = fopen(file_str, "a");
     if (NULL == cfg_file)
     {
         fprintf(stderr, "failed to open/create config file %s!\n", file_str);
         return -1;
     }
-
-    /* read state from the config file until there is no more */
-    while (more_coming)
-    {
-        more_coming = add_ammo(cfg_file, NULL);
-    }
-
     cmd_loop(cfg_file);
     fclose(cfg_file);
 
