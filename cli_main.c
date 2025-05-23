@@ -4,7 +4,7 @@
 #include <string.h>     /* for strcmp */
 #include <strings.h>    /* for strcasecmp */
 #include "ammo_pkg.h"
-// #include "stringdb.h"
+#include "stringdb.h"
 
 void print_help (void)
 {
@@ -17,18 +17,95 @@ void print_help (void)
           );
 }
 
-void add_ammo (void)
+
+
+/* syntax:
+ * YYYY.MM.DD
+ * line1
+ * line2
+ * line3
+ * blank line terminates the transaction
+ *
+ * for example:
+2025.05.23
+22 9mm Speer Lawman 124 TMJ 50 /ct
+20 9mm Winchester USA Ready 115 FMJ 50 /ct
+2 9mm Federal HST 147 HP 50/ct
+2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct
+
+ * would add two packages of ammo, three 9mm, one 380 ACP
+ *
+ * another example:
+2025.04.01
+-3 9mm Speer Lawman 124 TMJ 50 /ct
+
+ * would subtract (use) 3 packages of Speer 9mm
+
+ * @returns 1 if more coming, 0 if input is terminated
+ */
+int add_ammo (FILE *input_fp, FILE *output_fp)
 {
-    char buffer[132];
+    char line[132];
+    int year, month, day;
+    char str[5];
+    char *ptr;
 
     printf("for example:\n");
     printf("22 9mm Speer Lawman 124 TMJ 50 /ct\n");
     printf("2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct\n");
-    fgets(buffer, sizeof(buffer), stdin);
-    buffer[strcspn(buffer, "\n")] = 0;      /* trim off trailing newline */
-    printf("line=\"%s\"\n", buffer);
+    printf("enter timestamp in YYYY/MM/DD format:\n");
+    ptr = fgets(line, sizeof(line), input_fp);
+    if (!ptr)
+    {
+        return 0;
+    }
+    line[strcspn(line, "\n")] = 0;      /* trim off trailing newline */
+    printf("line=\"%s\"\n", line);
+    str[0] = line[0];
+    str[1] = line[1];
+    str[2] = line[2];
+    str[3] = line[3];
+    str[4] = '\0';
+    year = atoi(str);
+    str[0] = line[5];
+    str[1] = line[6];
+    str[2] = '\0';
+    month = atoi(str);
+    str[0] = line[8];
+    str[1] = line[9];
+    str[2] = '\0';
+    day = atoi(str);
+    printf("parsed year=%d month=%d day=%d", year, month, day);
+    if (output_fp)
+    {
+        fprintf(output_fp, "%04d/%02d/%02d\n", year, month, day);
+    }
+
     /* now parse the line */
-    ammo_parse(buffer);
+    for ( ; ; )
+    {
+        ptr = fgets(line, sizeof(line), input_fp);
+        if (!ptr)
+        {
+            return 0;
+        }
+        line[strcspn(line, "\n")] = 0;      /* trim off trailing newline */
+        printf("line=\"%s\"\n", line);
+        if ('\0' == line[0])
+        {
+            if (output_fp)
+            {
+                fprintf(output_fp, "\n");
+            }
+            break;
+        }
+        ammo_parse(line);
+        if (output_fp)
+        {
+            fprintf(output_fp, "%s\n", line);
+        }
+    }
+    return 1;
 }
 
 
@@ -40,7 +117,7 @@ void dump_everything (void)
 
 
 
-void cmd_loop (void)
+void cmd_loop (FILE *cfg_file)
 {
     int keep_going = 1;
     char c;
@@ -60,7 +137,7 @@ void cmd_loop (void)
         switch (c)
         {
         case 'A':
-            add_ammo();
+            add_ammo(stdin, cfg_file);
             break;
         case 'D':
             dump_everything();
@@ -84,6 +161,9 @@ void cmd_loop (void)
 int main (int argc, char **argv)
 {
     int account_id;
+    int more_coming = 1;
+    FILE *cfg_file;
+    char file_str[80];
 
     if (argc < 2)
     {
@@ -92,10 +172,26 @@ int main (int argc, char **argv)
     }
     printf("Ammo Hoard Inventory Manager, version 1.0.0\n");
     printf("===========================================\n");
+    ammo_pkg_init();
     account_id = atoi(argv[1]);
     printf("account ID=%d\n", account_id);
-    ammo_pkg_init();
-    cmd_loop();
+    snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);
+    printf("config file='%s'\n", file_str);
+    cfg_file = fopen(file_str, "rw");
+    if (NULL == cfg_file)
+    {
+        fprintf(stderr, "failed to open/create config file %s!\n", file_str);
+        return -1;
+    }
+
+    /* read state from the config file until there is no more */
+    while (more_coming)
+    {
+        more_coming = add_ammo(cfg_file, NULL);
+    }
+
+    cmd_loop(cfg_file);
+    fclose(cfg_file);
 
 #if 0
     for (ix = 1; ix < argc; ix++)
@@ -126,5 +222,6 @@ int main (int argc, char **argv)
     }
     stringdb_dump();
 #endif
+
     return 0;
 }
