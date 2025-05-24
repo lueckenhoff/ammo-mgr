@@ -13,6 +13,7 @@ void print_help (void)
            " dump - dump state\n"
            " help - show this help\n"
            " read - read in a ammo transaction file from disk\n"
+           " multiread - read multiple ammo transaction file2 from disk\n"
            " ? - show this help\n"
            " quit - quit the application\n"
            "\n"
@@ -153,7 +154,7 @@ void cmd_loop (FILE *cfg_file)
     int keep_going = 1;
     int ix;
     char *ptr;
-    char buffer[80];
+    char buffer[132];
     char *word2;
     char word1[10];
 
@@ -216,6 +217,14 @@ void cmd_loop (FILE *cfg_file)
         else if (0 == strncasecmp(word1, "read", 1))
         {
             ingest_path(word2, cfg_file);
+        }
+        else if (0 == strncasecmp(word1, "multiread", 1))
+        {
+            char *token;
+            while ((token = strsep(&word2, " ")) != NULL)
+            {
+                ingest_path(token, cfg_file);
+            }
         }
         else
         {
