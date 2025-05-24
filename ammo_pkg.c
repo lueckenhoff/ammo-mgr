@@ -197,9 +197,13 @@ int ammo_parse (char *line)
 //    printf("2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct\n");
 
     /* step 1: preprocess the line a little */
+    str_replace(line, "Fort Scott Munitions", "FortScott");
+    str_replace(line, "AMMO Inc", "AMMOInc");
+    str_replace(line, "Underwood Ammunition", "Underwood_Ammunition");
+    str_replace(line, "American Sniper", "American_Sniper");
     str_replace(line, "00BUCK 275", "484 00BUCK275");
     str_replace(line, "00 Buck 2.75\"", "484 00BUCK275");
-    str_replace(line, "22 LR ", "22 Long Rifle");
+    str_replace(line, "22 LR ", "22 Long Rifle ");
 
     /* first, work from end of line to the end of the (highly variable) product name */
     right = line + (strlen(line) - 1);
