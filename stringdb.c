@@ -3,7 +3,7 @@
 #include <string.h>
 #include "stringdb.h"
 
-#define MAX_STRINGS 100
+#define MAX_STRINGS 1000
 char *stringdb_arr[MAX_STRINGS];
 int stringdb_index = 0;
 
@@ -84,6 +84,6 @@ void stringdb_dump (void)
 
     for (ix = 0; ix < stringdb_index; ix++)
     {
-        printf("%03d %s\n", ix, stringdb_arr[ix]);
+        printf("%03d \"%s\"\n", ix, stringdb_arr[ix]);
     }
 }

@@ -45,5 +45,7 @@ ammo_pkg_lookup(char *caliber, char *vendor, char *product_name, unsigned bullet
 
 void ammo_pkg_dump(void);
 
+void ammo_pkg_query(char *caliber, char *vendor);
+
 int ammo_parse(char *line);
 #endif  /* not __INC_AMMO_PKG_H */

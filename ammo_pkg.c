@@ -121,6 +121,36 @@ void ammo_pkg_dump (void)
 
 
 
+void ammo_pkg_query (char *caliber, char *vendor)
+{
+    AMMO_PKG_T *pkg;
+
+    for( pkg = (AMMO_PKG_T *) utarray_front(ammo_pkg_arr);
+         pkg != NULL;
+         pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg))
+    {
+        if ((strlen(caliber) > 0)
+            && strncasecmp(caliber, string_id_get_string(pkg->caliber_id), strlen(caliber)))
+        {
+            continue;
+        }
+        if ((strlen(vendor) > 0)
+            && strncasecmp(vendor, string_id_get_string(pkg->vendor_id), strlen(vendor)))
+        {
+            continue;
+        }
+        printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
+        printf("  vendor=\"%s\" (id=%u)\n", string_id_get_string(pkg->vendor_id), pkg->vendor_id);
+        printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
+        printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
+        printf("  bullet_grains=%u\"\n", pkg->bullet_grains);
+        printf("  quantity_per_box=%u\"\n", pkg->quantity_per_box);
+        printf("  quantity_held=%d\"\n", pkg->quantity_held);
+    }
+}
+
+
+
 int
 str_replace (char *line, char *old, char *replace)
 {

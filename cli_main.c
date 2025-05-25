@@ -15,6 +15,8 @@ void print_help (void)
            " read - read in a ammo transaction file from disk\n"
            " multiread - read multiple ammo transaction file2 from disk\n"
            " ? - show this help\n"
+           " stringdb - dump strings database \n"
+           " show\n"
            " quit - quit the application\n"
            "\n"
            "(commands may be abbreviated)\n"
@@ -141,10 +143,68 @@ int ingest_path (char *path, FILE *output_fp)
     return rval;
 }
 
-void dump_everything (void)
+
+
+void do_show (char *query)
 {
-    stringdb_dump();
-    ammo_pkg_dump();
+    char *caliber = "";
+    char *vendor = "";
+    char *token;
+    int expect_caliber, expect_vendor;
+
+    expect_caliber = expect_vendor = 0;
+    while ((token = strsep(&query, ",")) != NULL)
+    {
+        printf("token='%s'\n", token);
+        if (expect_caliber)
+        {
+            caliber = token;
+            expect_caliber = 0;
+        }
+        else if (expect_vendor)
+        {
+            vendor = token;
+            expect_vendor = 0;
+        }
+        else if (0 == strcasecmp(token, "caliber"))
+        {
+            expect_caliber = 1;
+        }
+        else if (0 == strcasecmp(token, "vendor"))
+        {
+            expect_vendor = 1;
+        }
+    }
+    printf("caliber query is '%s'\n", caliber);
+    printf("vendor query is '%s'\n", vendor);
+    ammo_pkg_query(caliber, vendor);
+
+#if 0
+    printf("enter caliber: ");
+    ptr = fgets(caliber, sizeof(caliber), stdin);
+    if (!ptr)
+    {
+        return;
+    }
+    caliber[strcspn(caliber, "\n")] = 0;      /* trim off trailing newline */
+    printf("caliber=\"%s\"\n", caliber);
+    printf("enter vendor: ");
+    ptr = fgets(vendor, sizeof(vendor), stdin);
+    if (!ptr)
+    {
+        return;
+    }
+    vendor[strcspn(vendor, "\n")] = 0;      /* trim off trailing newline */
+    printf("vendor=\"%s\"\n", vendor);
+#endif  
+
+#if 0
+    if (0 == strncasecmp(str, "caliber=", 8))
+    {
+         caliber = str + 8;
+         printf("caliber = '%s'\n", caliber);
+    }
+#endif
 }
 
 
@@ -203,7 +263,11 @@ void cmd_loop (FILE *cfg_file)
         }
         else if (0 == strncasecmp(word1, "dump", 1))
         {
-            dump_everything();
+            ammo_pkg_dump();
+        }
+        else if (0 == strncasecmp(word1, "stringdb", 2))
+        {
+            stringdb_dump();
         }
         else if (   (0 == strncasecmp(word1, "help", 1))
                  || (0 == strcmp(word1, "?")))
@@ -225,6 +289,10 @@ void cmd_loop (FILE *cfg_file)
             {
                 ingest_path(token, cfg_file);
             }
+        }
+        else if (0 == strncasecmp(word1, "show", 2))
+        {
+            do_show(word2);
         }
         else
         {
