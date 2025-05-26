@@ -40,12 +40,14 @@ void print_help (void)
 2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct
 
  * would add two packages of ammo, three 9mm, one 380 ACP
+ * Note: we don't care about the separator in the timestamp;
+ * it can be dots or dashes or slashes or whatever
  *
  * another example:
 2025.04.01
 -3 9mm Speer Lawman 124 TMJ 50 /ct
 
- * would subtract (use) 3 packages of Speer 9mm
+ * would subtract (use) 3 packages of 9mm Speer "Lawman" 124 grain TMJ
 
  * @returns 1 if more coming, 0 if input is terminated
  */
