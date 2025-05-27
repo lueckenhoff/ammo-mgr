@@ -17,7 +17,9 @@ void print_help (void)
            " multiread - read multiple ammo transaction file2 from disk\n"
            " ? - show this help\n"
            " stringdb - dump strings database \n"
-           " show\n"
+           " show caliber=9mm vendor=federal\n"
+           " show caliber=9mm\n"
+           " show vendor=speer\n"
            " quit - quit the application\n"
            "\n"
            "(commands may be abbreviated)\n"
@@ -31,8 +33,34 @@ void do_show (char *query)
     char *caliber = "";
     char *vendor = "";
     char *token;
-    int expect_caliber, expect_vendor;
+    char *token2;
+//    int expect_caliber, expect_vendor;
 
+    while ((token = strsep(&query, ",")) != NULL)
+    {
+        printf("token='%s'\n", token);
+        while ((token2 = strsep(&token, "=")) != NULL)
+        {
+            printf("token2='%s'\n", token2);
+            if (0 == strcmp(token2, "caliber"))
+            {
+                token2 = strsep(&token, "=");
+                if (token2)
+                {
+                    caliber = token2;
+                }
+            }
+            else if (0 == strcmp(token2, "vendor"))
+            {
+                token2 = strsep(&token, "=");
+                if (token2)
+                {
+                    vendor = token2;
+                }
+            }
+        }
+    }
+#if 0	/* { */
     expect_caliber = expect_vendor = 0;
     while ((token = strsep(&query, ",")) != NULL)
     {
@@ -56,6 +84,8 @@ void do_show (char *query)
             expect_vendor = 1;
         }
     }
+#endif	/* 0 } */
+
     printf("caliber query is '%s'\n", caliber);
     printf("vendor query is '%s'\n", vendor);
     ammo_pkg_query(caliber, vendor);
