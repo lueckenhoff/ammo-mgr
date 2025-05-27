@@ -17,7 +17,7 @@ void print_help (void)
            " multiread - read multiple ammo transaction file2 from disk\n"
            " ? - show this help\n"
            " stringdb - dump strings database \n"
-           " show caliber=9mm vendor=federal\n"
+           " show caliber=9mm,vendor=federal\n"
            " show caliber=9mm\n"
            " show vendor=speer\n"
            " quit - quit the application\n"
