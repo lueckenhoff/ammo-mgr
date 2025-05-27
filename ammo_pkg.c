@@ -124,6 +124,7 @@ void ammo_pkg_dump (void)
 void ammo_pkg_query (char *caliber, char *vendor)
 {
     AMMO_PKG_T *pkg;
+    unsigned total_rounds = 0;
 
     for( pkg = (AMMO_PKG_T *) utarray_front(ammo_pkg_arr);
          pkg != NULL;
@@ -143,10 +144,12 @@ void ammo_pkg_query (char *caliber, char *vendor)
         printf("  vendor=\"%s\" (id=%u)\n", string_id_get_string(pkg->vendor_id), pkg->vendor_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
         printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
-        printf("  bullet_grains=%u\"\n", pkg->bullet_grains);
-        printf("  quantity_per_box=%u\"\n", pkg->quantity_per_box);
-        printf("  quantity_held=%d\"\n", pkg->quantity_held);
+        printf("  bullet_grains=%u\n", pkg->bullet_grains);
+        printf("  quantity_per_box=%u\n", pkg->quantity_per_box);
+        printf("  quantity_held=%d\n", pkg->quantity_held);
+        total_rounds += pkg->quantity_per_box * pkg->quantity_held;
     }
+    printf("%u rounds\n", total_rounds);
 }
 
 
