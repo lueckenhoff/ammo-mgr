@@ -220,15 +220,17 @@ int main (int argc, char **argv)
     FILE *cfg_file;
     char file_str[80];
 
-    if (argc < 2)
+    if (argc >= 2)
     {
-        printf("usage: %s <account number>\n", argv[0]);
-        return -1;
+        account_id = atoi(argv[1]);
+    }
+    else
+    {
+        account_id = 0; /* just default to zero */
     }
     printf("Ammo Hoard Inventory Manager, version 1.0.0\n");
     printf("===========================================\n");
     ammo_pkg_init();
-    account_id = atoi(argv[1]);
     printf("account ID=%d\n", account_id);
     snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);
     printf("config file='%s'\n", file_str);
