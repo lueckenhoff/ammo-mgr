@@ -5,6 +5,7 @@
 #include <strings.h>    /* for strcasecmp */
 #include "ammo_pkg.h"
 #include "stringdb.h"
+#include "vendor.h"
 #include "config.h"
 
 void print_help (void)
@@ -17,6 +18,7 @@ void print_help (void)
            " multiread - read multiple ammo transaction file2 from disk\n"
            " ? - show this help\n"
            " stringdb - dump strings database \n"
+           " vendordb - dump vendors database \n"
            " show caliber=9mm,vendor=federal\n"
            " show caliber=9mm\n"
            " show vendor=speer\n"
@@ -174,11 +176,26 @@ void cmd_loop (FILE *cfg_file)
         }
         else if (0 == strncasecmp(word1, "dump", 1))
         {
-            ammo_pkg_dump();
+            if (0 == strncasecmp(word2, "string", 1))
+            {
+                stringdb_dump();
+            }
+            else if (0 == strncasecmp(word2, "vendor", 1))
+            {
+                vendor_dump();
+            }
+            else
+            {
+                ammo_pkg_dump();
+            }
         }
         else if (0 == strncasecmp(word1, "stringdb", 2))
         {
             stringdb_dump();
+        }
+        else if (0 == strncasecmp(word1, "vendordb", 2))
+        {
+            vendor_dump();
         }
         else if (   (0 == strncasecmp(word1, "help", 1))
                  || (0 == strcmp(word1, "?")))
@@ -230,6 +247,8 @@ int main (int argc, char **argv)
     }
     printf("Ammo Hoard Inventory Manager, version 1.0.0\n");
     printf("===========================================\n");
+    stringdb_init();
+    vendor_init();
     ammo_pkg_init();
     printf("account ID=%d\n", account_id);
     snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);

@@ -3,9 +3,16 @@
 #include <string.h>
 #include "stringdb.h"
 
-#define MAX_STRINGS 1000
-char *stringdb_arr[MAX_STRINGS];
+#define INITIAL_MAX_STRINGS 8
+int max_strings = INITIAL_MAX_STRINGS;
+char **stringdb_arr;
 int stringdb_index = 0;
+
+void stringdb_init (void)
+{
+    max_strings = INITIAL_MAX_STRINGS;
+    stringdb_arr = malloc(sizeof(char *) * max_strings);
+}
 
 /* returns 0 on success, <0 on failure */
 /* if the string is already known, return its ID w/o allocating it again */
@@ -23,9 +30,17 @@ printf("add_string(%s): entry\n", str);
 printf("add_string: returning existing id %d\n", id);
         return id;
     }
-    if (stringdb_index >= MAX_STRINGS)
+    if (stringdb_index >= max_strings)
     {
-        return ERROR;
+        int new_siz = max_strings * 2;
+
+printf("add_string: increasing size from %d to %d\n", max_strings, new_siz);
+        stringdb_arr = realloc(stringdb_arr, new_siz * sizeof(char *));
+        if (!stringdb_arr)
+        {
+            return ERROR;
+        }
+        max_strings = new_siz;
     }
     len = strlen(str);
     newstr = malloc(len + 1);

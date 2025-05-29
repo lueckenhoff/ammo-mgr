@@ -6,7 +6,7 @@ CC = cc
 CFLAGS = -Wall -g
 LD = ${CC}
 LDFLAGS = 
-CLI_OBJS=cli_main.o ammo_pkg.o config.o stringdb.o
+CLI_OBJS=cli_main.o ammo_pkg.o config.o stringdb.o vendor.o
 STRINGDB_TEST_OBJS=stringdb_test.o stringdb.o
 .SUFFIXES:
 .SUFFIXES: .c .o

@@ -1,11 +1,18 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "vendor.h"
-#include "uthash.h"
 
-#define MAX_VENDORS 1000
-char *vendordb_arr[MAX_VENDORS];
+#define INITIAL_MAX_VENDORS 8
+char **vendordb_arr;
+int max_vendors = INITIAL_MAX_VENDORS;
 int vendordb_index = 0;
+
+void vendor_init (void)
+{
+    max_vendors = INITIAL_MAX_VENDORS;
+    vendordb_arr = malloc(sizeof(char *) * max_vendors);
+}
 
 /* returns 0 on success, <0 on failure */
 /* if the string is already known, return its ID w/o allocating it again */
@@ -22,9 +29,17 @@ printf("add_vendor(%s): entry\n", str);
 printf("add_vendor: returning existing id %d\n", id);
         return id;
     }
-    if (vendordb_index >= MAX_VENDORS)
+    if (vendordb_index >= max_vendors)
     {
-        return VENDOR_ERROR;
+        int new_siz = max_vendors * 2;
+
+printf("vendor_add: increasing size from %d to %d\n", max_vendors, new_siz);
+        vendordb_arr = realloc(vendordb_arr, new_siz * sizeof(char *));
+        if (!vendordb_arr)
+        {
+            return VENDOR_ERROR;
+        }
+        max_vendors = new_siz;
     }
     len = strlen(str);
     newstr = malloc(len + 1);
@@ -77,7 +92,7 @@ VENDOR_ID string_get_vendorid (const char * string)
 
 
 
-void vendordb_dump (void)
+void vendor_dump (void)
 {
     int ix;
 

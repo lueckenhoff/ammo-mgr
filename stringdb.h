@@ -4,6 +4,8 @@
 typedef int STRING_ID;
 #define ERROR -1
 
+void stringdb_init(void);
+
 /* returns 0 on success, <0 on failure */
 /* if the string is already known, return its ID w/o allocating it again */
 STRING_ID add_string(const char *str);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "ammo_pkg.h"
 #include "utarray.h"
+#include "vendor.h"
 
 UT_array *ammo_pkg_arr;
 UT_icd ammopkg_icd = {sizeof(AMMO_PKG_T), NULL, NULL, NULL};
@@ -25,7 +26,7 @@ ammo_pkg_lookup (char *caliber, char *vendor, char *product_name, unsigned bulle
     while ( (pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg)) )
     {
         if (    (0 == strcmp(caliber, string_id_get_string(pkg->caliber_id)))
-             && (0 == strcmp(vendor, string_id_get_string(pkg->vendor_id)))
+             && (0 == strcmp(vendor, vendor_id_get_string(pkg->vendor_id)))
              && (0 == strcmp(product_name, string_id_get_string(pkg->product_name_id)))
              && (bullet_grains == pkg->bullet_grains)
              && (0 == strcmp(bullet_descrip, string_id_get_string(pkg->bullet_descrip_id)))
@@ -51,7 +52,8 @@ ammo_pkg_add (
     unsigned quantity_per_box
     )
 {
-    STRING_ID caliber_id, vendor_id, product_name_id, bullet_descrip_id;
+    STRING_ID caliber_id, product_name_id, bullet_descrip_id;
+    VENDOR_ID vendor_id;
     AMMO_PKG_T *pkg;
 
     /* first, check to see if we already have this exact package */
@@ -64,7 +66,7 @@ printf("ammo_pkg_add: returning existing struct ptr\n");
 
     /* nope, go ahead and add strings to the string database */
     caliber_id        = add_string(caliber);
-    vendor_id         = add_string(vendor);
+    vendor_id         = vendor_add(vendor);
     product_name_id   = add_string(product_name);
     bullet_descrip_id = add_string(bullet_descrip);
 
@@ -110,7 +112,7 @@ void ammo_pkg_dump (void)
          pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg))
     {
         printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
-        printf("  vendor=\"%s\" (id=%u)\n", string_id_get_string(pkg->vendor_id), pkg->vendor_id);
+        printf("  vendor=\"%s\" (id=%u)\n", vendor_id_get_string(pkg->vendor_id), pkg->vendor_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
         printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
         printf("  bullet_grains=%u\"\n", pkg->bullet_grains);
@@ -136,12 +138,12 @@ void ammo_pkg_query (char *caliber, char *vendor)
             continue;
         }
         if ((strlen(vendor) > 0)
-            && strncasecmp(vendor, string_id_get_string(pkg->vendor_id), strlen(vendor)))
+            && strncasecmp(vendor, vendor_id_get_string(pkg->vendor_id), strlen(vendor)))
         {
             continue;
         }
         printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
-        printf("  vendor=\"%s\" (id=%u)\n", string_id_get_string(pkg->vendor_id), pkg->vendor_id);
+        printf("  vendor=\"%s\" (id=%u)\n", vendor_id_get_string(pkg->vendor_id), pkg->vendor_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
         printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
         printf("  bullet_grains=%u\n", pkg->bullet_grains);
@@ -231,6 +233,7 @@ int ammo_parse (char *line)
 
     /* step 1: preprocess the line a little */
     str_replace(line, "Fort Scott Munitions", "Fort_Scott");
+    str_replace(line, "Federated Ordnance Foundation", "Federated_Ordnance");
     str_replace(line, "AMMO Inc", "AMMO_Inc");
     str_replace(line, "Underwood Ammunition", "Underwood_Ammunition");
     str_replace(line, "American Sniper", "American_Sniper");
