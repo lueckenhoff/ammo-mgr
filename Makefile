@@ -3,7 +3,7 @@
 SHELL = /bin/sh
 BUILD_DIR := build
 CC = cc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -pedantic -g
 LD = ${CC}
 LDFLAGS = 
 RM=/bin/rm -f

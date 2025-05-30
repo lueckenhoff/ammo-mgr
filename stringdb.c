@@ -3,6 +3,8 @@
 #include <string.h>
 #include "stringdb.h"
 
+extern int g_verbose;
+
 #define INITIAL_MAX_STRINGS 8
 int max_strings = INITIAL_MAX_STRINGS;
 char **stringdb_arr;
@@ -23,18 +25,21 @@ add_string (const char *str)
     size_t len;
     STRING_ID id;
 
-printf("add_string(%s): entry\n", str);
+    if (g_verbose)
+        printf("add_string(%s): entry\n", str);
     id = string_get_id(str);
     if (ERROR != id)
     {
-printf("add_string: returning existing id %d\n", id);
+        if (g_verbose)
+            printf("add_string: returning existing id %d\n", id);
         return id;
     }
     if (stringdb_index >= max_strings)
     {
         int new_siz = max_strings * 2;
 
-printf("add_string: increasing size from %d to %d\n", max_strings, new_siz);
+        if (g_verbose)
+            printf("add_string: increasing size from %d to %d\n", max_strings, new_siz);
         stringdb_arr = realloc(stringdb_arr, new_siz * sizeof(char *));
         if (!stringdb_arr)
         {
@@ -53,7 +58,8 @@ printf("add_string: increasing size from %d to %d\n", max_strings, new_siz);
     stringdb_arr[stringdb_index] = newstr;
     id = stringdb_index;
     ++stringdb_index;
-printf("add_string: returning new id %d\n", id);
+    if (g_verbose)
+        printf("add_string: returning new id %d\n", id);
     return id;
 }
 
@@ -63,12 +69,14 @@ printf("add_string: returning new id %d\n", id);
 char *
 string_id_get_string (STRING_ID id)
 {
-//printf("string_id_get_string(%d): entry\n", id);
+    if (g_verbose)
+        printf("string_id_get_string(%d): entry\n", id);
     if ((id < 0) || (id >= stringdb_index))
     {
         return "???";
     }
-//printf("string_id_get_string(%d): returning %s\n", id, stringdb_arr[id]);
+    if (g_verbose)
+        printf("string_id_get_string(%d): returning %s\n", id, stringdb_arr[id]);
     return stringdb_arr[id];
 }
 
@@ -80,16 +88,19 @@ string_get_id (const char * string)
 {
     int ix;
 
-//printf("string_get_id(\"%s\"): entry\n", string);
+    if (g_verbose)
+        printf("string_get_id(\"%s\"): entry\n", string);
     for (ix = 0; ix < stringdb_index; ix++)
     {
         if (0 == strcmp(string, stringdb_arr[ix]))
         {
-//printf("string_get_id(\"%s\"): gotta match, returning %d\n", string, ix);
+            if (g_verbose)
+                printf("string_get_id(\"%s\"): gotta match, returning %d\n", string, ix);
             return ix;
         }
     }
-//printf("string_get_id(\"%s\"): returning ERROR\n", string);
+    if (g_verbose)
+        printf("string_get_id(\"%s\"): returning ERROR\n", string);
     return ERROR;
 }
 

@@ -3,6 +3,8 @@
 #include <string.h>
 #include "vendor.h"
 
+extern int g_verbose;
+
 #define INITIAL_MAX_VENDORS 8
 char **vendordb_arr;
 int max_vendors = INITIAL_MAX_VENDORS;
@@ -22,18 +24,21 @@ VENDOR_ID vendor_add (const char *str)
     size_t len;
     VENDOR_ID id;
 
-printf("add_vendor(%s): entry\n", str);
+    if (g_verbose)
+        printf("add_vendor(%s): entry\n", str);
     id = string_get_vendorid(str);
     if (VENDOR_ERROR != id)
     {
-printf("add_vendor: returning existing id %d\n", id);
+        if (g_verbose)
+            printf("add_vendor: returning existing id %d\n", id);
         return id;
     }
     if (vendordb_index >= max_vendors)
     {
         int new_siz = max_vendors * 2;
 
-printf("vendor_add: increasing size from %d to %d\n", max_vendors, new_siz);
+        if (g_verbose)
+            printf("vendor_add: increasing size from %d to %d\n", max_vendors, new_siz);
         vendordb_arr = realloc(vendordb_arr, new_siz * sizeof(char *));
         if (!vendordb_arr)
         {
@@ -52,7 +57,8 @@ printf("vendor_add: increasing size from %d to %d\n", max_vendors, new_siz);
     vendordb_arr[vendordb_index] = newstr;
     id = vendordb_index;
     ++vendordb_index;
-printf("add_vendor: returning new id %d\n", id);
+    if (g_verbose)
+        printf("add_vendor: returning new id %d\n", id);
     return id;
 }
 

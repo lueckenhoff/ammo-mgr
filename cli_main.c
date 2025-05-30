@@ -8,6 +8,8 @@
 #include "vendor.h"
 #include "config.h"
 
+int g_verbose = 0;
+
 void print_help (void)
 {
     printf("commands:\n"
@@ -15,13 +17,17 @@ void print_help (void)
            " dump - dump state\n"
            "   dump strings - show all strings\n"
            "   dump vendor - show all vendors\n"
+           "\n"
            " help - show this help\n"
+           "    ? - show this help\n"
            " read - read in a ammo transaction file from disk\n"
            " multiread - read multiple ammo transaction file2 from disk\n"
-           " ? - show this help\n"
-           " show caliber=9mm,vendor=federal\n"
-           " show caliber=9mm\n"
-           " show vendor=speer\n"
+           " show - perform queries against the inventory. For example:\n"
+           "   show caliber=9mm,vendor=federal\n"
+           "   show caliber=9mm\n"
+           "   show vendor=speer\n"
+           "\n"
+           " verbose - be verbose\n"
            " quit - quit the application\n"
            "\n"
            "(commands may be abbreviated)\n"
@@ -97,9 +103,12 @@ void do_show (char *query)
     }
 #endif	/* 0 } */
 
-    printf("caliber query is '%s'\n", caliber);
-    printf("vendor query is '%s'\n", vendor);
-    printf("bullet_descrip query is '%s'\n", bullet_descrip);
+    if (g_verbose)
+    {
+        printf("caliber query is '%s'\n", caliber);
+        printf("vendor query is '%s'\n", vendor);
+        printf("bullet_descrip query is '%s'\n", bullet_descrip);
+    }
     ammo_pkg_query(caliber, vendor, bullet_descrip);
 
 #if 0
@@ -169,7 +178,8 @@ void cmd_loop (FILE *cfg_file)
             word1[ix] = *ptr;
         }
         word1[ix] = '\0';
-        printf("read word1 '%s'\n", word1);
+        if (g_verbose)
+            printf("read word1 '%s'\n", word1);
         for (     ; ix < sizeof(buffer) - 1; ix++, ptr++)
         {
             if (!isspace(*ptr))
@@ -178,7 +188,8 @@ void cmd_loop (FILE *cfg_file)
             }
         }
         word2 = ptr;
-        printf("read word2 '%s'\n", word2);
+        if (g_verbose)
+            printf("read word2 '%s'\n", word2);
 
         if (0 == strncasecmp(word1, "add", 1))
         {
@@ -203,6 +214,10 @@ void cmd_loop (FILE *cfg_file)
                  || (0 == strcmp(word1, "?")))
         {
             print_help();
+        }
+        else if (0 == strncasecmp(word1, "verbose", 1))
+        {
+            g_verbose = 0;
         }
         else if (0 == strncasecmp(word1, "quit", 1))
         {

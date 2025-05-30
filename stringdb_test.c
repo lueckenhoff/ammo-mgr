@@ -4,6 +4,8 @@
 #include <strings.h>    /* for strcasecmp */
 #include "stringdb.h"
 
+int g_verbose = 1;
+
 int main (int argc, char **argv)
 {
     int ix;

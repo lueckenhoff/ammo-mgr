@@ -7,6 +7,8 @@
 #include "stringdb.h"
 #include "config.h"
 
+extern int g_verbose;
+
 /* syntax:
  * YYYY.MM.DD
  * line1
@@ -53,7 +55,8 @@ int cfg_add_ammo (FILE *input_fp, FILE *output_fp)
         return 0;
     }
     line[strcspn(line, "\n")] = 0;      /* trim off trailing newline */
-    printf("line=\"%s\"\n", line);
+    if (g_verbose)
+        printf("line=\"%s\"\n", line);
     str[0] = line[0];
     str[1] = line[1];
     str[2] = line[2];
@@ -68,7 +71,8 @@ int cfg_add_ammo (FILE *input_fp, FILE *output_fp)
     str[1] = line[9];
     str[2] = '\0';
     day = atoi(str);
-    printf("parsed year=%d month=%d day=%d", year, month, day);
+    if (g_verbose)
+        printf("parsed year=%d month=%d day=%d", year, month, day);
     if (output_fp)
     {
         fprintf(output_fp, "%04d/%02d/%02d\n", year, month, day);
@@ -83,7 +87,8 @@ int cfg_add_ammo (FILE *input_fp, FILE *output_fp)
             return 0;
         }
         line[strcspn(line, "\n")] = 0;      /* trim off trailing newline */
-        printf("line=\"%s\"\n", line);
+        if (g_verbose)
+            printf("line=\"%s\"\n", line);
         if ('\0' == line[0])
         {
             if (output_fp)

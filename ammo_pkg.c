@@ -3,6 +3,8 @@
 #include "utarray.h"
 #include "vendor.h"
 
+extern int g_verbose;
+
 UT_array *ammo_pkg_arr;
 UT_icd ammopkg_icd = {sizeof(AMMO_PKG_T), NULL, NULL, NULL};
 
@@ -60,7 +62,8 @@ ammo_pkg_add (
     pkg = ammo_pkg_lookup(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     if (pkg)
     {
-printf("ammo_pkg_add: returning existing struct ptr\n");
+        if (g_verbose)
+            printf("ammo_pkg_add: returning existing struct ptr\n");
         return pkg;
     }
 
@@ -85,18 +88,22 @@ printf("ammo_pkg_add: returning existing struct ptr\n");
     pkg->id                = ++ammo_pkg_index;
     pkg->quantity_held     = 0;
 
-    printf("at time of adding:\n");
-    printf("         pkg->caliber_id=%u\n", pkg->caliber_id);
-    printf("          pkg->vendor_id=%u\n", pkg->vendor_id);
-    printf("    pkg->product_name_id=%u\n", pkg->product_name_id);
-    printf("  pkg->bullet_descrip_id=%u\n", pkg->bullet_descrip_id);
-    printf("      pkg->bullet_grains=%u\n", pkg->bullet_grains);
-    printf("   pkg->quantity_per_box=%u\n", pkg->quantity_per_box);
-    printf("      pkg->quantity_held=%d\n", pkg->quantity_held);
-    printf("                 pkg->id=%u\n", pkg->id);
+    if (g_verbose)
+    {
+        printf("at time of adding:\n");
+        printf("         pkg->caliber_id=%u\n", pkg->caliber_id);
+        printf("          pkg->vendor_id=%u\n", pkg->vendor_id);
+        printf("    pkg->product_name_id=%u\n", pkg->product_name_id);
+        printf("  pkg->bullet_descrip_id=%u\n", pkg->bullet_descrip_id);
+        printf("      pkg->bullet_grains=%u\n", pkg->bullet_grains);
+        printf("   pkg->quantity_per_box=%u\n", pkg->quantity_per_box);
+        printf("      pkg->quantity_held=%d\n", pkg->quantity_held);
+        printf("                 pkg->id=%u\n", pkg->id);
+    }
     /* finally, add this to the dynamic array, and return the new structure ptr */
     utarray_push_back(ammo_pkg_arr, pkg);
-printf("ammo_pkg_add: returning new struct ptr %p\n", pkg);
+    if (g_verbose)
+        printf("ammo_pkg_add: returning new struct ptr %p\n", (void *) pkg);
     pkg = ammo_pkg_lookup(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     return pkg;
 }
@@ -187,7 +194,8 @@ str_replace (char *line, char *old, char *replace)
     {
         return 0;
     }
-    printf("str_replace: before='%s'\n", line);
+    if (g_verbose)
+        printf("str_replace: before='%s'\n", line);
     old_len = strlen(old);
     replace_len = strlen(replace);
     if (old_len == replace_len)
@@ -222,7 +230,8 @@ str_replace (char *line, char *old, char *replace)
         }
         memcpy(found, replace, replace_len);
     }
-    printf("str_replace:  after='%s'\n", line);
+    if (g_verbose)
+        printf("str_replace:  after='%s'\n", line);
     return 1;
 }
 
@@ -299,7 +308,7 @@ int ammo_parse (char *line)
     // printf("\n");
     tmpstr[ix] = '\0';
     quantity_per_box = (unsigned) atoi(tmpstr);
-    printf("quantity_per_box=%u\n", quantity_per_box);
+    // printf("quantity_per_box=%u\n", quantity_per_box);
 
     right = left - 2;
     cur = right;
@@ -308,15 +317,15 @@ int ammo_parse (char *line)
         --cur;
     }
     left = cur + 1;
-    printf("should be bullet_description, as a string:\n");
+    // printf("should be bullet_description, as a string:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         bullet_descrip[ix] = *cur;
-        printf("%c", *cur);
+        //printf("%c", *cur);
     }
     bullet_descrip[ix] = '\0';
-    printf("\n");
-    printf("bullet_descrip='%s'\n", bullet_descrip);
+    // printf("\n");
+    // printf("bullet_descrip='%s'\n", bullet_descrip);
 
     right = left - 2;
     cur = right;
@@ -325,16 +334,16 @@ int ammo_parse (char *line)
         --cur;
     }
     left = cur + 1;
-    printf("should be bullet weight, as a string:\n");
+    // printf("should be bullet weight, as a string:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
         tmpstr[ix] = *cur;
-        printf("%c", *cur);
+        // printf("%c", *cur);
     }
-    printf("\n");
+    // printf("\n");
     tmpstr[ix] = '\0';
     bullet_grains = (unsigned) atoi(tmpstr);
-    printf("bullet_grains=%u\n", bullet_grains);
+    // printf("bullet_grains=%u\n", bullet_grains);
 
     prodname_end = left - 2;
 
@@ -354,7 +363,7 @@ int ammo_parse (char *line)
     }
     tmpstr[ix] = '\0';
     quantity = atoi(tmpstr);
-    printf("quantity=%d\n", quantity);
+    // printf("quantity=%d\n", quantity);
     //printf("\n");
 
     left = right + 2;
@@ -426,7 +435,7 @@ int ammo_parse (char *line)
 
 skip_second_word:
     caliber[ix] = '\0';
-    printf("caliber='%s'\n", caliber);
+    // printf("caliber='%s'\n", caliber);
 
     left = right + 2;
     cur = left;
@@ -443,7 +452,7 @@ skip_second_word:
     }
     vendor[ix] = '\0';
     //printf("\n");
-    printf("vendor='%s'\n", vendor);
+    // printf("vendor='%s'\n", vendor);
 
     prodname_start = right + 2;
     //printf("product name (variable number of words):\n");
@@ -454,19 +463,21 @@ skip_second_word:
     }
     product_name[ix] = '\0';
     //printf("\n");
-    printf("product_name='%s'\n", product_name);
+    // printf("product_name='%s'\n", product_name);
 
     pkg = ammo_pkg_add(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
-    printf("ammo_pkg_add ret'd pkg=%p\n", pkg);
+    // printf("ammo_pkg_add ret'd pkg=%p\n", (void *) pkg);
 //    pkg = ammo_pkg_add(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
 //    printf("ammo_pkg_add ret'd pkg=%p\n", pkg);
     if (!pkg)
     {
         return ERROR;
     }
-    printf("before: pkg=%p pkg->quantity_held=%d\n", pkg, pkg->quantity_held);
+    if (g_verbose)
+        printf("before: pkg=%p pkg->quantity_held=%d\n", (void *) pkg, pkg->quantity_held);
     pkg->quantity_held += quantity;
-    printf("after: pkg=%p pkg->quantity_held=%d\n", pkg, pkg->quantity_held);
+    if (g_verbose)
+        printf("after: pkg=%p pkg->quantity_held=%d\n", (void *) pkg, pkg->quantity_held);
     return 0;
 }
 
