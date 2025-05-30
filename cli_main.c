@@ -13,12 +13,12 @@ void print_help (void)
     printf("commands:\n"
            " add - interactively add ammo\n"
            " dump - dump state\n"
+           "   dump strings - show all strings\n"
+           "   dump vendor - show all vendors\n"
            " help - show this help\n"
            " read - read in a ammo transaction file from disk\n"
            " multiread - read multiple ammo transaction file2 from disk\n"
            " ? - show this help\n"
-           " stringdb - dump strings database \n"
-           " vendordb - dump vendors database \n"
            " show caliber=9mm,vendor=federal\n"
            " show caliber=9mm\n"
            " show vendor=speer\n"
@@ -188,14 +188,6 @@ void cmd_loop (FILE *cfg_file)
             {
                 ammo_pkg_dump();
             }
-        }
-        else if (0 == strncasecmp(word1, "stringdb", 2))
-        {
-            stringdb_dump();
-        }
-        else if (0 == strncasecmp(word1, "vendordb", 2))
-        {
-            vendor_dump();
         }
         else if (   (0 == strncasecmp(word1, "help", 1))
                  || (0 == strcmp(word1, "?")))
