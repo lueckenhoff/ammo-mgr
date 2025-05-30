@@ -23,9 +23,10 @@ void print_help (void)
            " read - read in a ammo transaction file from disk\n"
            " multiread - read multiple ammo transaction file2 from disk\n"
            " show - perform queries against the inventory. For example:\n"
-           "   show caliber=9mm,vendor=federal\n"
-           "   show caliber=9mm\n"
-           "   show vendor=speer\n"
+           "   show caliber=9mm                                             (show all 9mm)\n"
+           "   show caliber=9mm,vendor=federal                              (show all 9mm from Federal)\n"
+           "   show caliber=9mm,bullet=jhp                                  (show all 9mm Jacketed Hollow Points)\n"
+           "   show vendor=speer                                            (show everything from Speer, in all calibers)\n"
            "\n"
            " terse - stop being verbose\n"
            " verbose - be verbose\n"
@@ -220,10 +221,12 @@ void cmd_loop (FILE *cfg_file)
         }
         else if (0 == strncasecmp(word1, "terse", 1))
         {
+            printf("will stop being verbose\n");
             g_verbose = 0;
         }
         else if (0 == strncasecmp(word1, "verbose", 1))
         {
+            printf("will start being verbose\n");
             g_verbose = 1;
         }
         else if (0 == strncasecmp(word1, "quit", 1))
