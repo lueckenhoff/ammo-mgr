@@ -248,6 +248,9 @@ int ammo_parse (char *line)
 //    printf("2 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 ct\n");
 
     /* step 1: preprocess the line a little */
+    str_replace(line, "FMJGT", "Green_Tip");
+    str_replace(line, "GT ", "Green_Tip ");
+    str_replace(line, "Green Tip", "Green_Tip");
     str_replace(line, "Fort Scott Munitions", "Fort_Scott");
     str_replace(line, "Federated Ordnance Foundation", "Federated_Ordnance");
     str_replace(line, "AMMO Inc", "AMMO_Inc");
