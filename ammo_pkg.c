@@ -142,6 +142,15 @@ void ammo_pkg_query (char *caliber, char *vendor)
         {
             continue;
         }
+        // 1 5.56 Nato PMC X-TAC 55 FMJ 20/ct
+        printf("%u ", pkg->quantity_held);
+        printf("%s ", string_id_get_string(pkg->caliber_id));
+        printf("%s ", vendor_id_get_string(pkg->vendor_id));
+        printf("%s ", string_id_get_string(pkg->product_name_id));
+        printf("%u ", pkg->bullet_grains);
+        printf("%u/ct\n", pkg->quantity_per_box);
+
+#if 0
         printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
         printf("  vendor=\"%s\" (id=%u)\n", vendor_id_get_string(pkg->vendor_id), pkg->vendor_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
@@ -149,6 +158,7 @@ void ammo_pkg_query (char *caliber, char *vendor)
         printf("  bullet_grains=%u\n", pkg->bullet_grains);
         printf("  quantity_per_box=%u\n", pkg->quantity_per_box);
         printf("  quantity_held=%d\n", pkg->quantity_held);
+#endif
         total_rounds += pkg->quantity_per_box * pkg->quantity_held;
     }
     printf("%u rounds\n", total_rounds);
