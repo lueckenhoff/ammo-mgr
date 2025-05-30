@@ -261,6 +261,7 @@ int ammo_parse (char *line)
     str_replace(line, "GT ", "Green_Tip ");
     str_replace(line, "Green Tip", "Green_Tip");
     str_replace(line, "Fort Scott Munitions", "Fort_Scott");
+    str_replace(line, "Fort_Scott TUI 95 20", "Fort_Scott 95 TUI 20");
     str_replace(line, "Federated Ordnance Foundation", "Federated_Ordnance");
     str_replace(line, "AMMO Inc", "AMMO_Inc");
     str_replace(line, "Underwood Ammunition", "Underwood_Ammunition");
