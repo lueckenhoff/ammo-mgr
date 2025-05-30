@@ -34,6 +34,7 @@ void do_show (char *query)
 {
     char *caliber = "";
     char *vendor = "";
+    char *bullet_descrip = "";
     char *token;
     char *token2;
 //    int expect_caliber, expect_vendor;
@@ -58,6 +59,14 @@ void do_show (char *query)
                 if (token2)
                 {
                     vendor = token2;
+                }
+            }
+            else if (0 == strcmp(token2, "bullet"))
+            {
+                token2 = strsep(&token, "=");
+                if (token2)
+                {
+                    bullet_descrip = token2;
                 }
             }
         }
@@ -90,7 +99,8 @@ void do_show (char *query)
 
     printf("caliber query is '%s'\n", caliber);
     printf("vendor query is '%s'\n", vendor);
-    ammo_pkg_query(caliber, vendor);
+    printf("bullet_descrip query is '%s'\n", bullet_descrip);
+    ammo_pkg_query(caliber, vendor, bullet_descrip);
 
 #if 0
     printf("enter caliber: ");
