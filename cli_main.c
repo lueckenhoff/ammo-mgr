@@ -27,6 +27,7 @@ void print_help (void)
            "   show caliber=9mm\n"
            "   show vendor=speer\n"
            "\n"
+           " terse - stop being verbose\n"
            " verbose - be verbose\n"
            " quit - quit the application\n"
            "\n"
@@ -47,10 +48,12 @@ void do_show (char *query)
 
     while ((token = strsep(&query, ",")) != NULL)
     {
-        printf("token='%s'\n", token);
+        if (g_verbose)
+            printf("token='%s'\n", token);
         while ((token2 = strsep(&token, "=")) != NULL)
         {
-            printf("token2='%s'\n", token2);
+            if (g_verbose)
+                printf("token2='%s'\n", token2);
             if (0 == strcmp(token2, "caliber"))
             {
                 token2 = strsep(&token, "=");
@@ -215,9 +218,13 @@ void cmd_loop (FILE *cfg_file)
         {
             print_help();
         }
-        else if (0 == strncasecmp(word1, "verbose", 1))
+        else if (0 == strncasecmp(word1, "terse", 1))
         {
             g_verbose = 0;
+        }
+        else if (0 == strncasecmp(word1, "verbose", 1))
+        {
+            g_verbose = 1;
         }
         else if (0 == strncasecmp(word1, "quit", 1))
         {
