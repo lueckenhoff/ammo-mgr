@@ -1,7 +1,7 @@
 [![pipeline status](https://gitlab.com/iniparser/iniparser/badges/main/pipeline.svg)](https://gitlab.com/iniparser/iniparser/-/commits/main)
 [![latest release](https://gitlab.com/iniparser/iniparser/-/badges/release.svg)](https://gitlab.com/iniparser/iniparser/-/releases)
 
-# Ammunution Inventory Manager (ammo-mgr) 4 #
+# Ammunition Inventory Manager (ammo-mgr) #
 
 ## Overview
 
@@ -9,22 +9,17 @@ This is an interactive program to manage a personal stock of ammunition.
 
 Key features:
 
- - Small : around 1500 sloc inside 4 files (2 .c and 2 .h)
+ - Small : around 1100 sloc inside 5 .c files 
  - Portable : no dependancies, written in `-pedantic` C
  - Core functions embodied in a library
  - CLI/TUI/GUI user-facing component use the core library
 
 ## Building
 
-This project uses CMake as build system. Use these command at the root or the
-project to get the static (i.e. `libiniparser.a`) and shared (i.e.
-`libiniparser.so`) libraries compiled:
+This project uses Make as build system. Customize the `Makefile` as necessary.
 
 ```
-mkdir build
-cd build
-cmake ..
-make all
+make
 ```
 
 
