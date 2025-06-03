@@ -1,4 +1,6 @@
 #include <stdio.h>
+#define __USE_GNU
+#include <string.h>
 #include "ammo_pkg.h"
 #include "utarray.h"
 #include "vendor.h"
