@@ -271,6 +271,7 @@ int ammo_parse (char *line)
     str_replace(line, "00BUCK 275", "484 00BUCK275");
     str_replace(line, "00 Buck 2.75\"", "484 00BUCK275");
     str_replace(line, "22 LR ", "22 Long Rifle ");
+    str_replace(line, "Sierra Outdoor", "Sierra");
 
     /* first, work from end of line to the end of the (highly variable) product name */
     right = line + (strlen(line) - 1);
