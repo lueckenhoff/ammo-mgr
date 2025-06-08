@@ -3,7 +3,7 @@
 #include <string.h>
 #include "ammo_pkg.h"
 #include "utarray.h"
-#include "vendor.h"
+#include "brand.h"
 
 extern int g_verbose;
 
@@ -22,7 +22,7 @@ void ammo_pkg_init(void)
 
 #if 1   /* { */
 AMMO_PKG_T *
-ammo_pkg_lookup (char *caliber, char *vendor, char *product_name, unsigned bullet_grains, char *bullet_descrip, unsigned quantity_per_box)
+ammo_pkg_lookup (char *caliber, char *brand, char *product_name, unsigned bullet_grains, char *bullet_descrip, unsigned quantity_per_box)
 {
     AMMO_PKG_T *pkg;
 
@@ -30,7 +30,7 @@ ammo_pkg_lookup (char *caliber, char *vendor, char *product_name, unsigned bulle
     while ( (pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg)) )
     {
         if (    (0 == strcmp(caliber, string_id_get_string(pkg->caliber_id)))
-             && (0 == strcmp(vendor, vendor_id_get_string(pkg->vendor_id)))
+             && (0 == strcmp(brand, brand_id_get_string(pkg->brand_id)))
              && (0 == strcmp(product_name, string_id_get_string(pkg->product_name_id)))
              && (bullet_grains == pkg->bullet_grains)
              && (0 == strcmp(bullet_descrip, string_id_get_string(pkg->bullet_descrip_id)))
@@ -49,7 +49,7 @@ ammo_pkg_lookup (char *caliber, char *vendor, char *product_name, unsigned bulle
 AMMO_PKG_T *
 ammo_pkg_add (
     char *caliber,
-    char *vendor,
+    char *brand,
     char *product_name,
     unsigned bullet_grains,
     char *bullet_descrip,
@@ -57,11 +57,11 @@ ammo_pkg_add (
     )
 {
     STRING_ID caliber_id, product_name_id, bullet_descrip_id;
-    VENDOR_ID vendor_id;
+    BRAND_ID brand_id;
     AMMO_PKG_T *pkg;
 
     /* first, check to see if we already have this exact package */
-    pkg = ammo_pkg_lookup(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
+    pkg = ammo_pkg_lookup(caliber, brand, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     if (pkg)
     {
         if (g_verbose)
@@ -71,7 +71,7 @@ ammo_pkg_add (
 
     /* nope, go ahead and add strings to the string database */
     caliber_id        = add_string(caliber);
-    vendor_id         = vendor_add(vendor);
+    brand_id         = brand_add(brand);
     product_name_id   = add_string(product_name);
     bullet_descrip_id = add_string(bullet_descrip);
 
@@ -82,7 +82,7 @@ ammo_pkg_add (
         return NULL;
     }
     pkg->caliber_id        = caliber_id;
-    pkg->vendor_id         = vendor_id;
+    pkg->brand_id         = brand_id;
     pkg->product_name_id   = product_name_id;
     pkg->bullet_descrip_id = bullet_descrip_id;
     pkg->bullet_grains     = bullet_grains;
@@ -94,7 +94,7 @@ ammo_pkg_add (
     {
         printf("at time of adding:\n");
         printf("         pkg->caliber_id=%u\n", pkg->caliber_id);
-        printf("          pkg->vendor_id=%u\n", pkg->vendor_id);
+        printf("          pkg->brand_id=%u\n", pkg->brand_id);
         printf("    pkg->product_name_id=%u\n", pkg->product_name_id);
         printf("  pkg->bullet_descrip_id=%u\n", pkg->bullet_descrip_id);
         printf("      pkg->bullet_grains=%u\n", pkg->bullet_grains);
@@ -106,7 +106,7 @@ ammo_pkg_add (
     utarray_push_back(ammo_pkg_arr, pkg);
     if (g_verbose)
         printf("ammo_pkg_add: returning new struct ptr %p\n", (void *) pkg);
-    pkg = ammo_pkg_lookup(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
+    pkg = ammo_pkg_lookup(caliber, brand, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     return pkg;
 }
 
@@ -121,7 +121,7 @@ void ammo_pkg_dump (void)
          pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg))
     {
         printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
-        printf("  vendor=\"%s\" (id=%u)\n", vendor_id_get_string(pkg->vendor_id), pkg->vendor_id);
+        printf("  brand=\"%s\" (id=%u)\n", brand_id_get_string(pkg->brand_id), pkg->brand_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
         printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
         printf("  bullet_grains=%u\"\n", pkg->bullet_grains);
@@ -132,7 +132,7 @@ void ammo_pkg_dump (void)
 
 
 
-void ammo_pkg_query (char *caliber, char *vendor, char *bullet_descrip)
+void ammo_pkg_query (char *caliber, char *brand, char *bullet_descrip)
 {
     AMMO_PKG_T *pkg;
     unsigned total_rounds = 0;
@@ -146,8 +146,8 @@ void ammo_pkg_query (char *caliber, char *vendor, char *bullet_descrip)
         {
             continue;
         }
-        if ((strlen(vendor) > 0)
-            && strncasecmp(vendor, vendor_id_get_string(pkg->vendor_id), strlen(vendor)))
+        if ((strlen(brand) > 0)
+            && strncasecmp(brand, brand_id_get_string(pkg->brand_id), strlen(brand)))
         {
             continue;
         }
@@ -159,7 +159,7 @@ void ammo_pkg_query (char *caliber, char *vendor, char *bullet_descrip)
         // 1 5.56 Nato PMC X-TAC 55 FMJ 20/ct
         printf("%u ", pkg->quantity_held);
         printf("%s ", string_id_get_string(pkg->caliber_id));
-        printf("%s ", vendor_id_get_string(pkg->vendor_id));
+        printf("%s ", brand_id_get_string(pkg->brand_id));
         printf("%s ", string_id_get_string(pkg->product_name_id));
         printf("%u ", pkg->bullet_grains);
         printf("%s ", string_id_get_string(pkg->bullet_descrip_id));
@@ -167,7 +167,7 @@ void ammo_pkg_query (char *caliber, char *vendor, char *bullet_descrip)
 
 #if 0
         printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
-        printf("  vendor=\"%s\" (id=%u)\n", vendor_id_get_string(pkg->vendor_id), pkg->vendor_id);
+        printf("  brand=\"%s\" (id=%u)\n", brand_id_get_string(pkg->brand_id), pkg->brand_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
         printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
         printf("  bullet_grains=%u\n", pkg->bullet_grains);
@@ -249,7 +249,7 @@ int ammo_parse (char *line)
     char *prodname_start;
     char *prodname_end;
     char caliber[40];
-    char vendor[40];
+    char brand[40];
     char product_name[80];
     char bullet_descrip[40];
     char tmpstr[40];
@@ -448,15 +448,15 @@ skip_second_word:
         ++cur;
     }
     right = cur - 1;
-    //printf("should be vendor:\n");
+    //printf("should be brand:\n");
     for (cur = left, ix = 0; cur <= right; cur++, ix++)
     {
-        vendor[ix] = *cur;
+        brand[ix] = *cur;
         //printf("%c", *cur);
     }
-    vendor[ix] = '\0';
+    brand[ix] = '\0';
     //printf("\n");
-    // printf("vendor='%s'\n", vendor);
+    // printf("brand='%s'\n", brand);
 
     prodname_start = right + 2;
     //printf("product name (variable number of words):\n");
@@ -469,9 +469,9 @@ skip_second_word:
     //printf("\n");
     // printf("product_name='%s'\n", product_name);
 
-    pkg = ammo_pkg_add(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
+    pkg = ammo_pkg_add(caliber, brand, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     // printf("ammo_pkg_add ret'd pkg=%p\n", (void *) pkg);
-//    pkg = ammo_pkg_add(caliber, vendor, product_name, bullet_grains, bullet_descrip, quantity_per_box);
+//    pkg = ammo_pkg_add(caliber, brand, product_name, bullet_grains, bullet_descrip, quantity_per_box);
 //    printf("ammo_pkg_add ret'd pkg=%p\n", pkg);
     if (!pkg)
     {

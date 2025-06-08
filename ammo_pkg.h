@@ -2,6 +2,7 @@
 #define __INC_AMMO_PKG_H
 
 #include "stringdb.h"
+#include "brand.h"
 
 /*
 some examples:
@@ -9,7 +10,7 @@ some examples:
 
 380 ACP Remington Compact Ultimate Defense 102 BJHP 20 /ct
     caliber_id="380 ACP",
-    vendor_id="Remington",
+    brand_id="Remington",
     product_name="Compact Ultimate Defense",
     bullet_grains=102,
     bullet_id="BJHP",
@@ -26,7 +27,7 @@ typedef struct
 {
     AMMO_PKG_ID id;
     STRING_ID   caliber_id;
-    STRING_ID   vendor_id;
+    BRAND_ID    brand_id;
     STRING_ID   product_name_id;
     unsigned    bullet_grains;
     STRING_ID   bullet_descrip_id;
@@ -38,14 +39,14 @@ typedef struct
 
 void ammo_pkg_init(void);
 
-AMMO_PKG_T * ammo_pkg_add(char *caliber, char *vendor, char *product_name, unsigned bullet_grains, char *bullet_id, unsigned quantity_per_box);
+AMMO_PKG_T * ammo_pkg_add(char *caliber, char *brand, char *product_name, unsigned bullet_grains, char *bullet_id, unsigned quantity_per_box);
 
 AMMO_PKG_T *
-ammo_pkg_lookup(char *caliber, char *vendor, char *product_name, unsigned bullet_grains, char *bullet_descrip, unsigned quantity_per_box);
+ammo_pkg_lookup(char *caliber, char *brand, char *product_name, unsigned bullet_grains, char *bullet_descrip, unsigned quantity_per_box);
 
 void ammo_pkg_dump(void);
 
-void ammo_pkg_query(char *caliber, char *vendor, char *bullet_descrip);
+void ammo_pkg_query(char *caliber, char *brand, char *bullet_descrip);
 
 int ammo_parse(char *line);
 #endif  /* not __INC_AMMO_PKG_H */

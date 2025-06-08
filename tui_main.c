@@ -5,7 +5,7 @@
 #include <strings.h>    /* for strcasecmp */
 #include "ammo_pkg.h"
 #include "stringdb.h"
-#include "vendor.h"
+#include "brand.h"
 #include "config.h"
 
 int g_verbose = 0;
@@ -16,7 +16,7 @@ void print_help (void)
            " add - interactively add ammo\n"
            " dump - dump state\n"
            "   dump strings - show all strings\n"
-           "   dump vendor - show all vendors\n"
+           "   dump brands - show all brands\n"
            "\n"
            " help - show this help\n"
            "    ? - show this help\n"
@@ -24,9 +24,9 @@ void print_help (void)
            " multiread - read multiple ammo transaction file2 from disk\n"
            " show - perform queries against the inventory. For example:\n"
            "   show caliber=9mm                                             (show all 9mm)\n"
-           "   show caliber=9mm,vendor=federal                              (show all 9mm from Federal)\n"
+           "   show caliber=9mm,brand=federal                               (show all 9mm from Federal)\n"
            "   show caliber=9mm,bullet=jhp                                  (show all 9mm Jacketed Hollow Points)\n"
-           "   show vendor=speer                                            (show everything from Speer, in all calibers)\n"
+           "   show brand=speer                                            (show everything from Speer, in all calibers)\n"
            "\n"
            " terse - stop being verbose\n"
            " verbose - be verbose\n"
@@ -41,11 +41,11 @@ void print_help (void)
 void do_show (char *query)
 {
     char *caliber = "";
-    char *vendor = "";
+    char *brand = "";
     char *bullet_descrip = "";
     char *token;
     char *token2;
-//    int expect_caliber, expect_vendor;
+//    int expect_caliber, expect_brand;
 
     while ((token = strsep(&query, ",")) != NULL)
     {
@@ -63,12 +63,12 @@ void do_show (char *query)
                     caliber = token2;
                 }
             }
-            else if (0 == strcmp(token2, "vendor"))
+            else if (0 == strcmp(token2, "brand"))
             {
                 token2 = strsep(&token, "=");
                 if (token2)
                 {
-                    vendor = token2;
+                    brand = token2;
                 }
             }
             else if (0 == strcmp(token2, "bullet"))
@@ -82,7 +82,7 @@ void do_show (char *query)
         }
     }
 #if 0	/* { */
-    expect_caliber = expect_vendor = 0;
+    expect_caliber = expect_brand = 0;
     while ((token = strsep(&query, ",")) != NULL)
     {
         printf("token='%s'\n", token);
@@ -91,18 +91,18 @@ void do_show (char *query)
             caliber = token;
             expect_caliber = 0;
         }
-        else if (expect_vendor)
+        else if (expect_brand)
         {
-            vendor = token;
-            expect_vendor = 0;
+            brand = token;
+            expect_brand = 0;
         }
         else if (0 == strcasecmp(token, "caliber"))
         {
             expect_caliber = 1;
         }
-        else if (0 == strcasecmp(token, "vendor"))
+        else if (0 == strcasecmp(token, "brand"))
         {
-            expect_vendor = 1;
+            expect_brand = 1;
         }
     }
 #endif	/* 0 } */
@@ -110,10 +110,10 @@ void do_show (char *query)
     if (g_verbose)
     {
         printf("caliber query is '%s'\n", caliber);
-        printf("vendor query is '%s'\n", vendor);
+        printf("brand query is '%s'\n", brand);
         printf("bullet_descrip query is '%s'\n", bullet_descrip);
     }
-    ammo_pkg_query(caliber, vendor, bullet_descrip);
+    ammo_pkg_query(caliber, brand, bullet_descrip);
 
 #if 0
     printf("enter caliber: ");
@@ -124,14 +124,14 @@ void do_show (char *query)
     }
     caliber[strcspn(caliber, "\n")] = 0;      /* trim off trailing newline */
     printf("caliber=\"%s\"\n", caliber);
-    printf("enter vendor: ");
-    ptr = fgets(vendor, sizeof(vendor), stdin);
+    printf("enter brand: ");
+    ptr = fgets(brand, sizeof(brand), stdin);
     if (!ptr)
     {
         return;
     }
-    vendor[strcspn(vendor, "\n")] = 0;      /* trim off trailing newline */
-    printf("vendor=\"%s\"\n", vendor);
+    brand[strcspn(brand, "\n")] = 0;      /* trim off trailing newline */
+    printf("brand=\"%s\"\n", brand);
 #endif  
 
 #if 0
@@ -205,9 +205,9 @@ void cmd_loop (FILE *cfg_file)
             {
                 stringdb_dump();
             }
-            else if (0 == strncasecmp(word2, "vendor", 1))
+            else if (0 == strncasecmp(word2, "brand", 1))
             {
-                vendor_dump();
+                brand_dump();
             }
             else
             {
@@ -275,7 +275,7 @@ int main (int argc, char **argv)
     printf("Ammo Hoard Inventory Manager, version 1.0.0\n");
     printf("===========================================\n");
     stringdb_init();
-    vendor_init();
+    brand_init();
     ammo_pkg_init();
     printf("account ID=%d\n", account_id);
     snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);
