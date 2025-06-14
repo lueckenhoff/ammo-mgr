@@ -10,6 +10,7 @@ RM=/bin/rm -f
 TUI_OBJS=\
     ammo_pkg.o \
     brand.o \
+    bullet.o \
     caliber.o \
     config.o \
     stringdb.o \
@@ -34,7 +35,7 @@ stringdb_test:	${STRINGDB_TEST_OBJS}
 
 .PHONY: clean
 clean:
-	${RM} ${CLI_OBJS} ${STRINGDB_TEST_OBJS}
+	${RM} ${TUI_OBJS} ${STRINGDB_TEST_OBJS}
 
 .PHONY: distclean
 distclean:	clean

@@ -3,6 +3,7 @@
 
 #include "stringdb.h"
 #include "brand.h"
+#include "bullet.h"
 #include "caliber.h"
 
 /*
@@ -31,7 +32,7 @@ typedef struct
     BRAND_ID    brand_id;
     STRING_ID   product_name_id;
     unsigned    bullet_grains;
-    STRING_ID   bullet_descrip_id;
+    BULLET_ID   bullet_descrip_id;
     unsigned    quantity_per_box;
     int         quantity_held;
 } AMMO_PKG_T;
@@ -47,7 +48,7 @@ ammo_pkg_lookup(char *caliber, char *brand, char *product_name, unsigned bullet_
 
 void ammo_pkg_dump(void);
 
-void ammo_pkg_query(char *caliber, char *brand, char *bullet_descrip);
+void ammo_pkg_query(char *caliber, char *brand, char *bullet_descrip, unsigned int bullet_grains);
 
 int ammo_parse(char *line);
 #endif  /* not __INC_AMMO_PKG_H */

@@ -6,6 +6,8 @@
 #include "ammo_pkg.h"
 #include "stringdb.h"
 #include "brand.h"
+#include "bullet.h"
+#include "caliber.h"
 #include "config.h"
 
 int g_verbose = 0;
@@ -41,6 +43,7 @@ void do_show (char *query)
     char *caliber = "";
     char *brand = "";
     char *bullet_descrip = "";
+    unsigned int bullet_grains = 0;
     char *token;
     char *token2;
 //    int expect_caliber, expect_brand;
@@ -77,68 +80,25 @@ void do_show (char *query)
                     bullet_descrip = token2;
                 }
             }
+            else if (0 == strcmp(token2, "grains"))
+            {
+                token2 = strsep(&token, "=");
+                if (token2)
+                {
+                    bullet_grains = atoi(token2);
+                }
+            }
         }
     }
-#if 0	/* { */
-    expect_caliber = expect_brand = 0;
-    while ((token = strsep(&query, ",")) != NULL)
-    {
-        printf("token='%s'\n", token);
-        if (expect_caliber)
-        {
-            caliber = token;
-            expect_caliber = 0;
-        }
-        else if (expect_brand)
-        {
-            brand = token;
-            expect_brand = 0;
-        }
-        else if (0 == strcasecmp(token, "caliber"))
-        {
-            expect_caliber = 1;
-        }
-        else if (0 == strcasecmp(token, "brand"))
-        {
-            expect_brand = 1;
-        }
-    }
-#endif	/* 0 } */
 
     if (g_verbose)
     {
         printf("caliber query is '%s'\n", caliber);
         printf("brand query is '%s'\n", brand);
         printf("bullet_descrip query is '%s'\n", bullet_descrip);
+        printf("bullet_grains query is %d\n", bullet_grains);
     }
-    ammo_pkg_query(caliber, brand, bullet_descrip);
-
-#if 0
-    printf("enter caliber: ");
-    ptr = fgets(caliber, sizeof(caliber), stdin);
-    if (!ptr)
-    {
-        return;
-    }
-    caliber[strcspn(caliber, "\n")] = 0;      /* trim off trailing newline */
-    printf("caliber=\"%s\"\n", caliber);
-    printf("enter brand: ");
-    ptr = fgets(brand, sizeof(brand), stdin);
-    if (!ptr)
-    {
-        return;
-    }
-    brand[strcspn(brand, "\n")] = 0;      /* trim off trailing newline */
-    printf("brand=\"%s\"\n", brand);
-#endif  
-
-#if 0
-    if (0 == strncasecmp(str, "caliber=", 8))
-    {
-         caliber = str + 8;
-         printf("caliber = '%s'\n", caliber);
-    }
-#endif
+    ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
 }
 
 
@@ -203,9 +163,13 @@ void cmd_loop (FILE *cfg_file)
             {
                 stringdb_dump();
             }
-            else if (0 == strncasecmp(word2, "brand", 1))
+            else if (0 == strncasecmp(word2, "brand", 2))
             {
                 brand_dump();
+            }
+            else if (0 == strncasecmp(word2, "bullet", 2))
+            {
+                bullet_dump();
             }
             else if (0 == strncasecmp(word2, "caliber", 1))
             {
@@ -278,6 +242,7 @@ int main (int argc, char **argv)
     printf("===========================================\n");
     stringdb_init();
     brand_init();
+    bullet_init();
     caliber_init();
     ammo_pkg_init();
     printf("account ID=%d\n", account_id);

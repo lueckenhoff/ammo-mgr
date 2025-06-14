@@ -4,6 +4,7 @@
 #include "ammo_pkg.h"
 #include "utarray.h"
 #include "brand.h"
+#include "bullet.h"
 #include "caliber.h"
 
 extern int g_verbose;
@@ -34,7 +35,7 @@ ammo_pkg_lookup (char *caliber, char *brand, char *product_name, unsigned bullet
              && (0 == strcmp(brand, brand_id_get_string(pkg->brand_id)))
              && (0 == strcmp(product_name, string_id_get_string(pkg->product_name_id)))
              && (bullet_grains == pkg->bullet_grains)
-             && (0 == strcmp(bullet_descrip, string_id_get_string(pkg->bullet_descrip_id)))
+             && (0 == strcmp(bullet_descrip, bullet_id_get_string(pkg->bullet_descrip_id)))
              && (quantity_per_box == pkg->quantity_per_box)
            )
         {
@@ -57,7 +58,8 @@ ammo_pkg_add (
     unsigned quantity_per_box
     )
 {
-    STRING_ID product_name_id, bullet_descrip_id;
+    STRING_ID product_name_id;
+    BULLET_ID bullet_descrip_id;
     CALIBER_ID caliber_id;
     BRAND_ID brand_id;
     AMMO_PKG_T *pkg;
@@ -75,7 +77,7 @@ ammo_pkg_add (
     caliber_id        = caliber_add(caliber);
     brand_id          = brand_add(brand);
     product_name_id   = add_string(product_name);
-    bullet_descrip_id = add_string(bullet_descrip);
+    bullet_descrip_id = bullet_add(bullet_descrip);
 
     /* then allocate a data structure and populate it */
     pkg = malloc(sizeof(AMMO_PKG_T));
@@ -134,7 +136,13 @@ void ammo_pkg_dump (void)
 
 
 
-void ammo_pkg_query (char *caliber, char *brand, char *bullet_descrip)
+void ammo_pkg_query
+    (
+    char *caliber,
+    char *brand,
+    char *bullet_descrip,
+    unsigned int bullet_grains
+    )
 {
     AMMO_PKG_T *pkg;
     unsigned total_rounds = 0;
@@ -154,17 +162,23 @@ void ammo_pkg_query (char *caliber, char *brand, char *bullet_descrip)
             continue;
         }
         if ((strlen(bullet_descrip) > 0)
-            && strncasecmp(bullet_descrip, string_id_get_string(pkg->bullet_descrip_id), strlen(bullet_descrip)))
+            && strncasecmp(bullet_descrip, bullet_id_get_string(pkg->bullet_descrip_id), strlen(bullet_descrip)))
         {
             continue;
         }
+        if ((0 != bullet_grains)
+            && (pkg->bullet_grains != bullet_grains))
+        {
+            continue;
+        }
+
         // 1 5.56 Nato PMC X-TAC 55 FMJ 20/ct
         printf("%u ", pkg->quantity_held);
         printf("%s ", caliber_id_get_string(pkg->caliber_id));
         printf("%s ", brand_id_get_string(pkg->brand_id));
         printf("%s ", string_id_get_string(pkg->product_name_id));
         printf("%u ", pkg->bullet_grains);
-        printf("%s ", string_id_get_string(pkg->bullet_descrip_id));
+        printf("%s ", bullet_id_get_string(pkg->bullet_descrip_id));
         printf("%u/ct\n", pkg->quantity_per_box);
 
         total_rounds += pkg->quantity_per_box * pkg->quantity_held;
@@ -265,8 +279,9 @@ int ammo_parse (char *line)
     str_replace(line, "00 Buck 2.75\"", "484 00BUCK275");
     str_replace(line, "22 Long Rifle ", "22 LR ");
     str_replace(line, "Sierra Outdoor", "Sierra");
+    str_replace(line, "Stars and Stripes", "Stars_and_Stripes");
     str_replace(line, "5.56 Nato", "5.56 NATO");
-    str_replace(line, "223 Rem ", "223 Remington ");
+    str_replace(line, "223 Remington ", "223 Rem ");
     str_replace(line, "380 Auto", "380 ACP");
 
     /* first, work from end of line to the end of the (highly variable) product name */
@@ -384,37 +399,6 @@ int ammo_parse (char *line)
     if (('9' == left[0]) && ('m' == left[1]) && ('m' == left[2]))
     {
         goto skip_second_word;
-    }
-    else if (('2' == left[0]) && ('2' == left[1]))
-    {
-        int do_skip = 0;
-        int skip_len = 0;
-        if (0 == strncasecmp(right + 2, "Long Rifle ", 11))
-        {
-            do_skip = 1;
-            skip_len = 10;
-        }
-        else if (0 == strncasecmp(right + 2, "LR ", 3))
-        {
-            do_skip = 1;
-            skip_len = 20;
-        }
-        if (do_skip)
-        {
-            caliber[ix++] = ' ';
-            caliber[ix++] = 'L';
-            caliber[ix++] = 'o';
-            caliber[ix++] = 'n';
-            caliber[ix++] = 'g';
-            caliber[ix++] = ' ';
-            caliber[ix++] = 'R';
-            caliber[ix++] = 'i';
-            caliber[ix++] = 'f';
-            caliber[ix++] = 'l';
-            caliber[ix++] = 'e';
-            right += skip_len;
-            goto skip_second_word;
-        }
     }
 
     left = right + 2;
