@@ -3,6 +3,7 @@
 
 #include "stringdb.h"
 #include "brand.h"
+#include "caliber.h"
 
 /*
 some examples:
@@ -26,7 +27,7 @@ typedef int AMMO_PKG_ID;
 typedef struct
 {
     AMMO_PKG_ID id;
-    STRING_ID   caliber_id;
+    CALIBER_ID  caliber_id;
     BRAND_ID    brand_id;
     STRING_ID   product_name_id;
     unsigned    bullet_grains;

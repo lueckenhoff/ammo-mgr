@@ -13,25 +13,23 @@ int g_verbose = 0;
 void print_help (void)
 {
     printf("commands:\n"
-           " add - interactively add ammo\n"
-           " dump - dump state\n"
-           "   dump strings - show all strings\n"
-           "   dump brands - show all brands\n"
-           "\n"
-           " help - show this help\n"
-           "    ? - show this help\n"
-           " read - read in a ammo transaction file from disk\n"
-           " multiread - read multiple ammo transaction file2 from disk\n"
-           " show - perform queries against the inventory. For example:\n"
-           "   show caliber=9mm                                             (show all 9mm)\n"
-           "   show caliber=9mm,brand=federal                               (show all 9mm from Federal)\n"
-           "   show caliber=9mm,bullet=jhp                                  (show all 9mm Jacketed Hollow Points)\n"
-           "   show brand=speer                                            (show everything from Speer, in all calibers)\n"
-           "\n"
-           " terse - stop being verbose\n"
-           " verbose - be verbose\n"
-           " quit - quit the application\n"
-           "\n"
+           "add - interactively add ammo\n"
+           "dump - dump state\n"
+           "  dump strings - show all strings\n"
+           "  dump brands - show all brands\n"
+           "help - show this help\n"
+           "   ? - show this help\n"
+           "read - read in a ammo transaction file from disk\n"
+           "multiread - read multiple ammo transaction file2 from disk\n"
+           "show - perform queries against the inventory.\n"
+           "  For example:\n"
+           "  show caliber=9mm               (show all 9mm)\n"
+           "  show caliber=9mm,brand=federal (show all 9mm from Federal)\n"
+           "  show caliber=9mm,bullet=jhp    (show all 9mm Jacketed Hollow Points)\n"
+           "  show brand=speer               (show everything from Speer, in all calibers)\n"
+           "terse - stop being verbose\n"
+           "verbose - be verbose\n"
+           "quit - quit the application\n"
            "(commands may be abbreviated)\n"
           );
 }
@@ -209,6 +207,10 @@ void cmd_loop (FILE *cfg_file)
             {
                 brand_dump();
             }
+            else if (0 == strncasecmp(word2, "caliber", 1))
+            {
+                caliber_dump();
+            }
             else
             {
                 ammo_pkg_dump();
@@ -276,6 +278,7 @@ int main (int argc, char **argv)
     printf("===========================================\n");
     stringdb_init();
     brand_init();
+    caliber_init();
     ammo_pkg_init();
     printf("account ID=%d\n", account_id);
     snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);

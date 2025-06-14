@@ -12,6 +12,7 @@ int main (int argc, char **argv)
     STRING_ID id, id2;
     char *str;
 
+    stringdb_init();
     printf("argc=%d\n", argc);
     for (ix = 1; ix < argc; ix++)
     {

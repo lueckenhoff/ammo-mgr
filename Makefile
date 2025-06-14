@@ -10,6 +10,7 @@ RM=/bin/rm -f
 TUI_OBJS=\
     ammo_pkg.o \
     brand.o \
+    caliber.o \
     config.o \
     stringdb.o \
     tui_main.o

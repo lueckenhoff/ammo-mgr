@@ -4,6 +4,7 @@
 #include "ammo_pkg.h"
 #include "utarray.h"
 #include "brand.h"
+#include "caliber.h"
 
 extern int g_verbose;
 
@@ -29,7 +30,7 @@ ammo_pkg_lookup (char *caliber, char *brand, char *product_name, unsigned bullet
     pkg = NULL;
     while ( (pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg)) )
     {
-        if (    (0 == strcmp(caliber, string_id_get_string(pkg->caliber_id)))
+        if (    (0 == strcmp(caliber, caliber_id_get_string(pkg->caliber_id)))
              && (0 == strcmp(brand, brand_id_get_string(pkg->brand_id)))
              && (0 == strcmp(product_name, string_id_get_string(pkg->product_name_id)))
              && (bullet_grains == pkg->bullet_grains)
@@ -56,7 +57,8 @@ ammo_pkg_add (
     unsigned quantity_per_box
     )
 {
-    STRING_ID caliber_id, product_name_id, bullet_descrip_id;
+    STRING_ID product_name_id, bullet_descrip_id;
+    CALIBER_ID caliber_id;
     BRAND_ID brand_id;
     AMMO_PKG_T *pkg;
 
@@ -70,8 +72,8 @@ ammo_pkg_add (
     }
 
     /* nope, go ahead and add strings to the string database */
-    caliber_id        = add_string(caliber);
-    brand_id         = brand_add(brand);
+    caliber_id        = caliber_add(caliber);
+    brand_id          = brand_add(brand);
     product_name_id   = add_string(product_name);
     bullet_descrip_id = add_string(bullet_descrip);
 
@@ -82,7 +84,7 @@ ammo_pkg_add (
         return NULL;
     }
     pkg->caliber_id        = caliber_id;
-    pkg->brand_id         = brand_id;
+    pkg->brand_id          = brand_id;
     pkg->product_name_id   = product_name_id;
     pkg->bullet_descrip_id = bullet_descrip_id;
     pkg->bullet_grains     = bullet_grains;
@@ -120,7 +122,7 @@ void ammo_pkg_dump (void)
          pkg != NULL;
          pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg))
     {
-        printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
+        printf("caliber=\"%s\" (id=%u)\n", caliber_id_get_string(pkg->caliber_id), pkg->caliber_id);
         printf("  brand=\"%s\" (id=%u)\n", brand_id_get_string(pkg->brand_id), pkg->brand_id);
         printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
         printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
@@ -142,7 +144,7 @@ void ammo_pkg_query (char *caliber, char *brand, char *bullet_descrip)
          pkg = (AMMO_PKG_T *)utarray_next(ammo_pkg_arr, pkg))
     {
         if ((strlen(caliber) > 0)
-            && strncasecmp(caliber, string_id_get_string(pkg->caliber_id), strlen(caliber)))
+            && strncasecmp(caliber, caliber_id_get_string(pkg->caliber_id), strlen(caliber)))
         {
             continue;
         }
@@ -158,22 +160,13 @@ void ammo_pkg_query (char *caliber, char *brand, char *bullet_descrip)
         }
         // 1 5.56 Nato PMC X-TAC 55 FMJ 20/ct
         printf("%u ", pkg->quantity_held);
-        printf("%s ", string_id_get_string(pkg->caliber_id));
+        printf("%s ", caliber_id_get_string(pkg->caliber_id));
         printf("%s ", brand_id_get_string(pkg->brand_id));
         printf("%s ", string_id_get_string(pkg->product_name_id));
         printf("%u ", pkg->bullet_grains);
         printf("%s ", string_id_get_string(pkg->bullet_descrip_id));
         printf("%u/ct\n", pkg->quantity_per_box);
 
-#if 0
-        printf("caliber=\"%s\" (id=%u)\n", string_id_get_string(pkg->caliber_id), pkg->caliber_id);
-        printf("  brand=\"%s\" (id=%u)\n", brand_id_get_string(pkg->brand_id), pkg->brand_id);
-        printf("  product_name=\"%s\" (id=%u)\n", string_id_get_string(pkg->product_name_id), pkg->product_name_id);
-        printf("  bullet_descrip=\"%s\" (id=%u)\n", string_id_get_string(pkg->bullet_descrip_id), pkg->bullet_descrip_id);
-        printf("  bullet_grains=%u\n", pkg->bullet_grains);
-        printf("  quantity_per_box=%u\n", pkg->quantity_per_box);
-        printf("  quantity_held=%d\n", pkg->quantity_held);
-#endif
         total_rounds += pkg->quantity_per_box * pkg->quantity_held;
     }
     printf("%u rounds\n", total_rounds);
@@ -270,8 +263,11 @@ int ammo_parse (char *line)
     str_replace(line, "American Sniper", "American_Sniper");
     str_replace(line, "00BUCK 275", "484 00BUCK275");
     str_replace(line, "00 Buck 2.75\"", "484 00BUCK275");
-    str_replace(line, "22 LR ", "22 Long Rifle ");
+    str_replace(line, "22 Long Rifle ", "22 LR ");
     str_replace(line, "Sierra Outdoor", "Sierra");
+    str_replace(line, "5.56 Nato", "5.56 NATO");
+    str_replace(line, "223 Rem ", "223 Remington ");
+    str_replace(line, "380 Auto", "380 ACP");
 
     /* first, work from end of line to the end of the (highly variable) product name */
     right = line + (strlen(line) - 1);
