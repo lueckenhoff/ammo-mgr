@@ -18,7 +18,10 @@ void print_help (void)
            "add - interactively add ammo\n"
            "dump - dump state\n"
            "  dump strings - show all strings\n"
-           "  dump brands - show all brands\n"
+           "list - list various things:\n"
+           "  list brands - show all brands\n"
+           "  list bullets - show all bullet descriptions (FMJ, JHP, ...)\n"
+           "  list calibers - show all calibers\n"
            "help - show this help\n"
            "   ? - show this help\n"
            "read - read in a ammo transaction file from disk\n"
@@ -157,13 +160,9 @@ void cmd_loop (FILE *cfg_file)
         {
             cfg_add_ammo(stdin, cfg_file);
         }
-        else if (0 == strncasecmp(word1, "dump", 1))
+        else if (0 == strncasecmp(word1, "list", 1))
         {
-            if (0 == strncasecmp(word2, "string", 1))
-            {
-                stringdb_dump();
-            }
-            else if (0 == strncasecmp(word2, "brand", 2))
+            if (0 == strncasecmp(word2, "brand", 2))
             {
                 brand_dump();
             }
@@ -174,6 +173,24 @@ void cmd_loop (FILE *cfg_file)
             else if (0 == strncasecmp(word2, "caliber", 1))
             {
                 caliber_dump();
+            }
+            else
+            {
+                printf("please re-issue command and specify brand/bullet/caliber\n"
+                       "  for example:\n"
+                       "list brands\n"
+                       "  or\n"
+                       "list bullets\n"
+                       "  or\n"
+                       "list calibers\n"
+                       );
+            }
+        }
+        else if (0 == strncasecmp(word1, "dump", 1))
+        {
+            if (0 == strncasecmp(word2, "string", 1))
+            {
+                stringdb_dump();
             }
             else
             {
@@ -247,7 +264,7 @@ int main (int argc, char **argv)
     ammo_pkg_init();
     printf("account ID=%d\n", account_id);
     snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);
-    printf("config file='%s'\n", file_str);
+    printf("data file='%s'\n", file_str);
     (void) cfg_ingest_path(file_str, NULL);
     cfg_file = fopen(file_str, "a");
     if (NULL == cfg_file)
