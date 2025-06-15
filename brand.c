@@ -116,6 +116,7 @@ void brand_dump (void)
 {
     struct brand_item *brand_list = NULL;
     struct brand_item *item;
+    struct brand_item *tmp;
     int ix;
 
     for (ix = 0; ix < brand_db_index; ix++)
@@ -133,7 +134,7 @@ void brand_dump (void)
     DL_FOREACH(brand_list, item) {
         printf("%s\n", item->str);
     }
-    DL_FOREACH(brand_list, item) {
+    DL_FOREACH_SAFE(brand_list, item, tmp) {
         free(item);
     }
 }
