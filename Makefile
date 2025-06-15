@@ -13,6 +13,7 @@ TUI_OBJS=\
     bullet.o \
     caliber.o \
     config.o \
+    item.o \
     stringdb.o \
     tui_main.o
 

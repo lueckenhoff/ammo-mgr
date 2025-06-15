@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "caliber.h"
+#include "item.h"
 
 extern int g_verbose;
 
@@ -98,12 +99,7 @@ CALIBER_ID string_get_caliberid (const char * string)
 
 
 
-void caliber_dump (void)
+void caliber_list_all (void)
 {
-    int ix;
-
-    for (ix = 0; ix < caliber_db_index; ix++)
-    {
-        printf("%03d \"%s\"\n", ix, caliber_db_arr[ix]);
-    }
+    item_list_all(caliber_db_arr, caliber_db_index);
 }

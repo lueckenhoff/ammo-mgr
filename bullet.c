@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bullet.h"
+#include "item.h"
 
 extern int g_verbose;
 
@@ -98,12 +99,7 @@ BULLET_ID string_get_bulletid (const char * string)
 
 
 
-void bullet_dump (void)
+void bullet_list_all (void)
 {
-    int ix;
-
-    for (ix = 0; ix < bullet_db_index; ix++)
-    {
-        printf("%03d \"%s\"\n", ix, bullet_db_arr[ix]);
-    }
+    item_list_all(bullet_db_arr, bullet_db_index);
 }

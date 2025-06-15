@@ -41,71 +41,6 @@ void print_help (void)
 
 
 
-void do_show (char *query)
-{
-    char *caliber = "";
-    char *brand = "";
-    char *bullet_descrip = "";
-    unsigned int bullet_grains = 0;
-    char *token;
-    char *token2;
-//    int expect_caliber, expect_brand;
-
-    while ((token = strsep(&query, ",")) != NULL)
-    {
-        if (g_verbose)
-            printf("token='%s'\n", token);
-        while ((token2 = strsep(&token, "=")) != NULL)
-        {
-            if (g_verbose)
-                printf("token2='%s'\n", token2);
-            if (0 == strcmp(token2, "caliber"))
-            {
-                token2 = strsep(&token, "=");
-                if (token2)
-                {
-                    caliber = token2;
-                }
-            }
-            else if (0 == strcmp(token2, "brand"))
-            {
-                token2 = strsep(&token, "=");
-                if (token2)
-                {
-                    brand = token2;
-                }
-            }
-            else if (0 == strcmp(token2, "bullet"))
-            {
-                token2 = strsep(&token, "=");
-                if (token2)
-                {
-                    bullet_descrip = token2;
-                }
-            }
-            else if (0 == strcmp(token2, "grains"))
-            {
-                token2 = strsep(&token, "=");
-                if (token2)
-                {
-                    bullet_grains = atoi(token2);
-                }
-            }
-        }
-    }
-
-    if (g_verbose)
-    {
-        printf("caliber query is '%s'\n", caliber);
-        printf("brand query is '%s'\n", brand);
-        printf("bullet_descrip query is '%s'\n", bullet_descrip);
-        printf("bullet_grains query is %d\n", bullet_grains);
-    }
-    ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
-}
-
-
-
 void cmd_loop (FILE *cfg_file)
 {
     int keep_going = 1;
@@ -164,15 +99,15 @@ void cmd_loop (FILE *cfg_file)
         {
             if (0 == strncasecmp(word2, "brand", 2))
             {
-                brand_dump();
+                brand_list_all();
             }
             else if (0 == strncasecmp(word2, "bullet", 2))
             {
-                bullet_dump();
+                bullet_list_all();
             }
             else if (0 == strncasecmp(word2, "caliber", 1))
             {
-                caliber_dump();
+                caliber_list_all();
             }
             else
             {

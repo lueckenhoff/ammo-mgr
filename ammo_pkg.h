@@ -51,4 +51,6 @@ void ammo_pkg_dump(void);
 void ammo_pkg_query(char *caliber, char *brand, char *bullet_descrip, unsigned int bullet_grains);
 
 int ammo_parse(char *line);
+
+void do_show(char *query);
 #endif  /* not __INC_AMMO_PKG_H */
