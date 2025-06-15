@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "brand.h"
+#include "utlist.h"
 
 extern int g_verbose;
 
@@ -9,6 +10,12 @@ extern int g_verbose;
 char **brand_db_arr;
 int max_brands = INITIAL_MAX_BRANDS;
 int brand_db_index = 0;
+
+struct brand_item {
+    int id;
+    char *str;
+    struct brand_item *prev, *next;
+};
 
 void brand_init (void)
 {
@@ -98,12 +105,35 @@ BRAND_ID string_get_brandid (const char * string)
 
 
 
+int brand_order_asc (struct brand_item *a, struct brand_item *b)
+{
+    return strcmp(a->str, b->str);
+}
+
+
+
 void brand_dump (void)
 {
+    struct brand_item *brand_list = NULL;
+    struct brand_item *item;
     int ix;
 
     for (ix = 0; ix < brand_db_index; ix++)
     {
-        printf("%03d \"%s\"\n", ix, brand_db_arr[ix]);
+        //printf("%03d \"%s\"\n", ix, brand_db_arr[ix]);
+        item = malloc(sizeof(struct brand_item));
+        if (!item)
+        {
+            return;
+        }
+        item->id = ix;
+        item->str = brand_db_arr[ix];
+        DL_INSERT_INORDER(brand_list, item, brand_order_asc);
+    }
+    DL_FOREACH(brand_list, item) {
+        printf("%s\n", item->str);
+    }
+    DL_FOREACH(brand_list, item) {
+        free(item);
     }
 }
