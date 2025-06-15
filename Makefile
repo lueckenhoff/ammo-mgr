@@ -7,6 +7,16 @@ CFLAGS = -Wall -pedantic -g
 LD = ${CC}
 LDFLAGS = 
 RM=/bin/rm -f
+CLI_OBJS=\
+    ammo_pkg.o \
+    brand.o \
+    bullet.o \
+    caliber.o \
+    config.o \
+    item.o \
+    stringdb.o \
+    cli_main.o
+
 TUI_OBJS=\
     ammo_pkg.o \
     brand.o \
@@ -26,7 +36,10 @@ STRINGDB_TEST_OBJS=stringdb_test.o stringdb.o
 #	$(MKDIR_P) $(dir $@)
 #	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-all:	stringdb_test tui
+all:	stringdb_test tui cli
+
+cli:	${CLI_OBJS}
+	${LD} $^ -o $@
 
 tui:	${TUI_OBJS}
 	${LD} $^ -o $@
@@ -36,8 +49,8 @@ stringdb_test:	${STRINGDB_TEST_OBJS}
 
 .PHONY: clean
 clean:
-	${RM} ${TUI_OBJS} ${STRINGDB_TEST_OBJS}
+	${RM} ${CLI_OBJS} ${TUI_OBJS} ${STRINGDB_TEST_OBJS}
 
 .PHONY: distclean
 distclean:	clean
-	${RM} tui stringdb_test
+	${RM} cli tui stringdb_test
