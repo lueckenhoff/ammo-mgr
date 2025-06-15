@@ -12,9 +12,10 @@
 
 int g_verbose = 0;
 
-void print_help (void)
+void print_help (char *prog_name)
 {
     printf("usage:\n"
+           " %s <ammo file name> and then arguments:\n"
            "add - interactively add ammo\n"
            "dump - dump state\n"
            "  dump strings - show all strings\n"
@@ -35,7 +36,8 @@ void print_help (void)
            "terse - stop being verbose\n"
            "verbose - be verbose\n"
            "quit - quit the application\n"
-           "(commands may be abbreviated)\n"
+           "(commands may be abbreviated)\n",
+           prog_name
           );
 }
 
@@ -44,17 +46,17 @@ void print_help (void)
 int main (int argc, char **argv)
 {
     int ix;
-    int account_id;
     FILE *cfg_file;
-    char file_str[80];
+    char *file_str;
 
     if (argc >= 2)
     {
-        account_id = atoi(argv[1]);
+        file_str = argv[1];
     }
     else
     {
-        account_id = 0; /* just default to zero */
+        printf("must specifiy an ammo data file!\n");
+        return -1;
     }
 //    printf("Ammo Hoard Inventory Manager, version 1.0.0\n");
 //    printf("===========================================\n");
@@ -63,8 +65,6 @@ int main (int argc, char **argv)
     bullet_init();
     caliber_init();
     ammo_pkg_init();
-//    printf("account ID=%d\n", account_id);
-    snprintf(file_str, sizeof(file_str) -1 , "%08d.amo", account_id);
 //    printf("data file='%s'\n", file_str);
     (void) cfg_ingest_path(file_str, NULL);
     cfg_file = fopen(file_str, "a");
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
     else if (   (0 == strncasecmp(argv[2], "help", 1))
              || (0 == strcmp(argv[2], "?")))
     {
-        print_help();
+        print_help(argv[0]);
     }
     else if (0 == strncasecmp(argv[2], "read", 1))
     {
