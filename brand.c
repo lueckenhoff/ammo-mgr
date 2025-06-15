@@ -12,7 +12,6 @@ int max_brands = INITIAL_MAX_BRANDS;
 int brand_db_index = 0;
 
 struct brand_item {
-    int id;
     char *str;
     struct brand_item *prev, *next;
 };
@@ -127,7 +126,6 @@ void brand_dump (void)
         {
             return;
         }
-        item->id = ix;
         item->str = brand_db_arr[ix];
         DL_INSERT_INORDER(brand_list, item, brand_order_asc);
     }
