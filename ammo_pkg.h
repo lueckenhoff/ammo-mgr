@@ -53,7 +53,8 @@ void ammo_pkg_query(
     char *brand,
     char *bullet_descrip,
     unsigned int bullet_grains,
-    unsigned * ptr_total_rounds
+    unsigned * ptr_total_rounds,
+    unsigned * ptr_grand_total_rounds
 );
 
 int ammo_parse(char *line);

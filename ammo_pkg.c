@@ -144,7 +144,8 @@ void ammo_pkg_query
     char *brand,
     char *bullet_descrip,
     unsigned int bullet_grains,
-    unsigned * ptr_total_rounds
+    unsigned * ptr_total_rounds,
+    unsigned * ptr_grand_total_rounds
     )
 {
     AMMO_PKG_T *pkg;
@@ -175,7 +176,7 @@ void ammo_pkg_query
         }
 
         // 1 5.56 Nato PMC X-TAC 55 FMJ 20/ct
-        printf("%u ", pkg->quantity_held);
+        printf("%3u ", pkg->quantity_held);
         printf("%s ", caliber_id_get_string(pkg->caliber_id));
         printf("%s ", brand_id_get_string(pkg->brand_id));
         printf("%s ", string_id_get_string(pkg->product_name_id));
@@ -186,6 +187,10 @@ void ammo_pkg_query
         if (ptr_total_rounds)
         {
             *ptr_total_rounds += pkg->quantity_per_box * pkg->quantity_held;
+        }
+        if (ptr_grand_total_rounds)
+        {
+            *ptr_grand_total_rounds += pkg->quantity_per_box * pkg->quantity_held;
         }
     }
 }
@@ -538,11 +543,12 @@ void do_show (char *query)
         (bullet_grains > 0))
     {
         total_rounds = 0;
-        ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains, &total_rounds);
+        ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains, &total_rounds, NULL);
         printf("%u rounds\n", total_rounds);
     }
     else
     {
+        unsigned grand_total_rounds = 0;
         /* emit sorted by caliber, then by brand */
         while ((caliber = caliber_get_next(caliber)))
         {
@@ -557,12 +563,13 @@ void do_show (char *query)
             printf("\n");
             while((brand = brand_get_next(brand)))
             {
-                ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains, &total_rounds);
+                ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains, &total_rounds, &grand_total_rounds);
             }
             printf("%u rounds of %s\n", total_rounds, caliber);
             printf("\n");
             printf("\n");
         }
+        printf("%u rounds of all calibers\n", grand_total_rounds);
     }
 }
 
