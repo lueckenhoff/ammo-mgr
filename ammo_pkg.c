@@ -6,6 +6,8 @@
 #include "brand.h"
 #include "bullet.h"
 #include "caliber.h"
+#include "utlist.h"
+#include "item.h"
 
 extern int g_verbose;
 
@@ -527,7 +529,28 @@ void do_show (char *query)
         printf("bullet_descrip query is '%s'\n", bullet_descrip);
         printf("bullet_grains query is %d\n", bullet_grains);
     }
-    ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
+    if (strlen(caliber) > 0)
+    {
+        ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
+    }
+    else
+    {
+        /* emit sorted by caliber */
+        while ((caliber = caliber_get_next(caliber)))
+        {
+            size_t len = strlen(caliber);
+//printf("do_show: gotta caliber='%s', invoking ammo_pkg_query w/ it\n", caliber);
+            printf("%s\n", caliber);
+            while (len-- > 0)
+            {
+                printf("-");
+            }
+            printf("\n");
+            ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
+            printf("\n");
+            printf("\n");
+        }
+    }
 }
 
 
