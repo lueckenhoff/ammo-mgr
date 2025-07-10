@@ -44,7 +44,7 @@ void print_help (void)
 void cmd_loop (FILE *cfg_file)
 {
     int keep_going = 1;
-    int ix;
+    unsigned ux;
     char *ptr;
     char buffer[132];
     char *word2;
@@ -62,25 +62,25 @@ void cmd_loop (FILE *cfg_file)
 
         /* skip any leading spaces */
         ptr = buffer;
-        ix = 0;
-        while (isspace(*ptr) && (ix < sizeof(buffer) - 1))
+        ux = 0;
+        while (isspace(*ptr) && (ux < sizeof(buffer) - 1))
         {
-            ++ix;
+            ++ux;
             ++ptr;
         }
 
-        for (ix = 0; ix < sizeof(word1) - 1; ix++, ptr++)
+        for (ux = 0; ux < sizeof(word1) - 1; ux++, ptr++)
         {
             if (isspace(*ptr))
             {
                 break;
             }
-            word1[ix] = *ptr;
+            word1[ux] = *ptr;
         }
-        word1[ix] = '\0';
+        word1[ux] = '\0';
         if (g_verbose)
             printf("read word1 '%s'\n", word1);
-        for (     ; ix < sizeof(buffer) - 1; ix++, ptr++)
+        for (     ; ux < sizeof(buffer) - 1; ux++, ptr++)
         {
             if (!isspace(*ptr))
             {
