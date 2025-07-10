@@ -59,14 +59,14 @@ CALIBER_ID caliber_add (const char *str)
     }
     newstr[len] = '\0'; /* force NULL-terminated */
     strncpy(newstr, str, len);
-    caliber_db_arr[caliber_db_index] = newstr;
-    id = caliber_db_index;
-    ++caliber_db_index;
     item = malloc(sizeof(struct item));
     if (!item)
     {
         return CALIBER_ERROR;
     }
+    caliber_db_arr[caliber_db_index] = newstr;
+    id = caliber_db_index;
+    ++caliber_db_index;
     item->str = newstr;
     DL_INSERT_INORDER(caliber_list, item, item_order_ascending);
     if (g_verbose)

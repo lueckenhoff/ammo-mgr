@@ -48,7 +48,13 @@ ammo_pkg_lookup(char *caliber, char *brand, char *product_name, unsigned bullet_
 
 void ammo_pkg_dump(void);
 
-void ammo_pkg_query(char *caliber, char *brand, char *bullet_descrip, unsigned int bullet_grains);
+void ammo_pkg_query(
+    char *caliber,
+    char *brand,
+    char *bullet_descrip,
+    unsigned int bullet_grains,
+    unsigned * ptr_total_rounds
+);
 
 int ammo_parse(char *line);
 

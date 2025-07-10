@@ -143,11 +143,11 @@ void ammo_pkg_query
     char *caliber,
     char *brand,
     char *bullet_descrip,
-    unsigned int bullet_grains
+    unsigned int bullet_grains,
+    unsigned * ptr_total_rounds
     )
 {
     AMMO_PKG_T *pkg;
-    unsigned total_rounds = 0;
 
     for( pkg = (AMMO_PKG_T *) utarray_front(ammo_pkg_arr);
          pkg != NULL;
@@ -183,9 +183,11 @@ void ammo_pkg_query
         printf("%s ", bullet_id_get_string(pkg->bullet_descrip_id));
         printf("%u/ct\n", pkg->quantity_per_box);
 
-        total_rounds += pkg->quantity_per_box * pkg->quantity_held;
+        if (ptr_total_rounds)
+        {
+            *ptr_total_rounds += pkg->quantity_per_box * pkg->quantity_held;
+        }
     }
-    printf("%u rounds\n", total_rounds);
 }
 
 
@@ -478,6 +480,7 @@ void do_show (char *query)
     char *token;
     char *token2;
 //    int expect_caliber, expect_brand;
+    unsigned total_rounds = 0;
 
     while ((token = strsep(&query, ",")) != NULL)
     {
@@ -529,15 +532,21 @@ void do_show (char *query)
         printf("bullet_descrip query is '%s'\n", bullet_descrip);
         printf("bullet_grains query is %d\n", bullet_grains);
     }
-    if (strlen(caliber) > 0)
+    if ((strlen(caliber) > 0) ||
+        (strlen(brand) > 0) ||
+        (strlen(bullet_descrip) > 0) ||
+        (bullet_grains > 0))
     {
-        ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
+        total_rounds = 0;
+        ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains, &total_rounds);
+        printf("%u rounds\n", total_rounds);
     }
     else
     {
-        /* emit sorted by caliber */
+        /* emit sorted by caliber, then by brand */
         while ((caliber = caliber_get_next(caliber)))
         {
+            total_rounds = 0;
             size_t len = strlen(caliber);
 //printf("do_show: gotta caliber='%s', invoking ammo_pkg_query w/ it\n", caliber);
             printf("%s\n", caliber);
@@ -546,7 +555,11 @@ void do_show (char *query)
                 printf("-");
             }
             printf("\n");
-            ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains);
+            while((brand = brand_get_next(brand)))
+            {
+                ammo_pkg_query(caliber, brand, bullet_descrip, bullet_grains, &total_rounds);
+            }
+            printf("%u rounds of %s\n", total_rounds, caliber);
             printf("\n");
             printf("\n");
         }

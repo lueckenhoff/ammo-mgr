@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "brand.h"
+#include "utlist.h"
 #include "item.h"
 
 extern int g_verbose;
@@ -10,11 +11,13 @@ extern int g_verbose;
 char **brand_db_arr;
 int max_brands = INITIAL_MAX_BRANDS;
 int brand_db_index = 0;
+struct item * brand_list = NULL;
 
 void brand_init (void)
 {
     max_brands = INITIAL_MAX_BRANDS;
     brand_db_arr = malloc(sizeof(char *) * max_brands);
+    brand_list = NULL;
 }
 
 /* returns 0 on success, <0 on failure */
@@ -22,6 +25,7 @@ void brand_init (void)
 BRAND_ID brand_add (const char *str)
 {
     char *newstr;
+    struct item * item;
     size_t len;
     BRAND_ID id;
 
@@ -53,11 +57,18 @@ BRAND_ID brand_add (const char *str)
     {
         return BRAND_ERROR;
     }
+    item = malloc(sizeof(struct item));
+    if (!item)
+    {
+        return BRAND_ERROR;
+    }
     newstr[len] = '\0'; /* force NULL-terminated */
     strncpy(newstr, str, len);
     brand_db_arr[brand_db_index] = newstr;
     id = brand_db_index;
     ++brand_db_index;
+    item->str = newstr;
+    DL_INSERT_INORDER(brand_list, item, item_order_ascending);
     if (g_verbose)
         printf("add_brand: returning new id %d\n", id);
     return id;
@@ -103,3 +114,43 @@ void brand_list_all (void)
 {
     item_list_all(brand_db_arr, brand_db_index);
 }
+
+
+
+char * brand_get_next (char *brand)
+{
+    struct item * item;
+    char *rval = "";
+
+//printf("brand_get_next('%s'): entry\n", brand);
+    if ((NULL == brand) || (0 == strlen(brand)))
+    {
+        rval = brand_list->str;
+//printf("brand_get_next: default assigning %s\n", brand_list->str);
+        return rval;
+    }
+
+    DL_FOREACH(brand_list, item)
+    {
+//printf("brand_get_next: item->str='%s'\n", item->str);
+        if (0 == strcasecmp(brand, item->str))
+        {
+            if (item->next)
+            {
+//printf("brand_get_next: this item matched, assigning %s\n", item->next->str);
+                rval = item->next->str;
+            }
+            else
+            {
+//printf("brand_get_next: this item matched, but end of list assigning NULL\n");
+                rval = NULL;
+            }
+            goto done_searching;
+        }
+    }
+done_searching:
+//printf("brand_get_next: about to free item list\n");
+    return rval;
+}
+
+
