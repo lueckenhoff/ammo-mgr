@@ -180,7 +180,7 @@ void ammo_pkg_query
         printf("%s ", caliber_id_get_string(pkg->caliber_id));
         printf("%s ", brand_id_get_string(pkg->brand_id));
         printf("%s ", string_id_get_string(pkg->product_name_id));
-        printf("%u ", pkg->bullet_grains);
+        printf("%u grain ", pkg->bullet_grains);
         printf("%s ", bullet_id_get_string(pkg->bullet_descrip_id));
         printf("%u/ct\n", pkg->quantity_per_box);
 
@@ -549,6 +549,7 @@ void do_show (char *query)
     else
     {
         unsigned grand_total_rounds = 0;
+
         /* emit sorted by caliber, then by brand */
         while ((caliber = caliber_get_next(caliber)))
         {
