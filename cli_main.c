@@ -24,7 +24,6 @@ void print_help (char *prog_name)
            "  list bullets - show all bullet descriptions (FMJ, JHP, ...)\n"
            "  list calibers - show all calibers\n"
            "help - show this help\n"
-           "   ? - show this help\n"
            "read - read in a ammo transaction file from disk\n"
            "multiread - read multiple ammo transaction file2 from disk\n"
            "show - perform queries against the inventory.\n"
@@ -58,6 +57,13 @@ int main (int argc, char **argv)
         printf("must specifiy an ammo data file!\n");
         return -1;
     }
+
+    if (argc < 3)
+    {
+        print_help(argv[0]);
+        return -1;
+    }
+
 //    printf("Ammo Hoard Inventory Manager, version 1.0.0\n");
 //    printf("===========================================\n");
     stringdb_init();
