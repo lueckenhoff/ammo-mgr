@@ -7,7 +7,7 @@ This is an interactive program to manage a personal stock of ammunition.
 
 Key features:
 
- - Small : around 1,100 sloc inside 5 .c files 
+ - Small : around 1,800 SLoC inside 10 C files 
  - Portable : no dependancies, written in `-pedantic` C (TODO)
  - Core functions embodied in a library (TODO)
  - CLI/TUI/GUI user-facing component use the core library (TODO)
