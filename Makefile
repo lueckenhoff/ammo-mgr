@@ -47,6 +47,15 @@ tui:	${TUI_OBJS}
 stringdb_test:	${STRINGDB_TEST_OBJS}
 	${LD} $^ -o $@
 
+
+.PHONY:	check
+check:
+	echo "make check placeholder"
+
+.PHONY:	distcheck
+distcheck:
+	echo "make distcheck placeholder"
+
 .PHONY: clean
 clean:
 	${RM} ${CLI_OBJS} ${TUI_OBJS} ${STRINGDB_TEST_OBJS}
