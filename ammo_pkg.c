@@ -71,7 +71,9 @@ ammo_pkg_add (
     if (pkg)
     {
         if (g_verbose)
+        {
             printf("ammo_pkg_add: returning existing struct ptr\n");
+        }
         return pkg;
     }
 
@@ -82,7 +84,7 @@ ammo_pkg_add (
     bullet_descrip_id = bullet_add(bullet_descrip);
 
     /* then allocate a data structure and populate it */
-    pkg = malloc(sizeof(AMMO_PKG_T));
+    pkg = (AMMO_PKG_T *) malloc(sizeof(AMMO_PKG_T));
     if (!pkg)
     {
         return NULL;
@@ -111,7 +113,9 @@ ammo_pkg_add (
     /* finally, add this to the dynamic array, and return the new structure ptr */
     utarray_push_back(ammo_pkg_arr, pkg);
     if (g_verbose)
+    {
         printf("ammo_pkg_add: returning new struct ptr %p\n", (void *) pkg);
+    }
     pkg = ammo_pkg_lookup(caliber, brand, product_name, bullet_grains, bullet_descrip, quantity_per_box);
     return pkg;
 }
@@ -287,7 +291,7 @@ int ammo_parse (char *line)
     str_replace(line, "00BUCK 275", "484 00BUCK275");
     str_replace(line, "00 Buck 2.75\"", "484 00BUCK275");
     str_replace(line, "22 Long Rifle ", "22 LR ");
-    str_replace(line, "Sierra Outdoor", "Sierra");
+    str_replace(line, "Sierra Outdoor", "Sierra_Outdoor");
     str_replace(line, "Stars and Stripes", "Stars_and_Stripes");
     str_replace(line, "5.56 Nato", "5.56 NATO");
     str_replace(line, "223 Remington ", "223 Rem ");
